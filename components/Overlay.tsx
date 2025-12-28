@@ -6,6 +6,8 @@ import HorizontalCarousel, { Work } from './HorizontalCarousel';
 import WorkModal from './WorkModal';
 import GlassCard from './GlassCard';
 
+import MorphingText from './MorphingText';
+
 gsap.registerPlugin(ScrollTrigger);
 
 interface Project {
@@ -216,8 +218,8 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <section id="hero" className="min-h-screen flex flex-col justify-center px-10 relative overflow-hidden">
         <div className="reveal flex flex-col items-center justify-center text-center">
           <div className="absolute top-10 left-10 text-left">
-            <span className="metadata-label block mb-1">2025</span>
-            <span className="font-display-bold text-[10px] uppercase tracking-widest">digital corporeality archive</span>
+            {/* <span className="metadata-label block mb-1">2025</span> */}
+            {/*<span className="font-display-bold text-[10px] uppercase tracking-widest">digital corporeality archive</span>*/}
           </div>
 
           {/* <LayeredTypography
@@ -233,6 +235,11 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
                 Status: Actuated
               </p>
             </GlassCard>
+          </div>
+
+          {/* Morphing Dynamic Statement */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xs pointer-events-none">
+            <MorphingText />
           </div>
         </div>
       </section>
