@@ -188,12 +188,14 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       {activeWork && (
         <WorkModal
           work={activeWork}
+          index={works.findIndex(w => w.title === activeWork.title)}
+          total={works.length}
           onClose={() => setActiveWork(null)}
         />
       )}
 
-      {/* ABOUT SECTION (Intro + Statement) */}
-      <section id="about" className="min-h-screen flex flex-col justify-center px-10 relative overflow-hidden">
+      {/* HERO SECTION */}
+      <section id="hero" className="min-h-screen flex flex-col justify-center px-10 relative overflow-hidden">
         <div className="reveal flex flex-col items-center justify-center text-center">
           <div className="absolute top-10 left-10 text-left">
             <span className="metadata-label block mb-1">2025</span>
@@ -206,21 +208,49 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             distortion={distortion}
           />
 
-          <div className="absolute bottom-10 left-10 max-w-sm text-left hidden md:block">
-            <GlassCard variant="compact" dark className="mb-6">
-              <div className="w-24 h-24 overflow-hidden mb-4 bg-black/5">
-                <img src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover grayscale opacity-40" />
-              </div>
-              <p className="metadata-label">© 2025 Bruno Realities</p>
-            </GlassCard>
-          </div>
-
           <div className="absolute bottom-10 right-10 text-right hidden md:block">
             <GlassCard variant="compact" dark>
               <p className="metadata-label leading-relaxed">
                 Phase: Fragmented<br />
                 Status: Actuated
               </p>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT SECTION (Artist Statement) */}
+      <section id="about" className="min-h-screen py-32 px-10 flex items-center justify-center">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-20 items-center reveal">
+          {/* Aligned Image */}
+          <div className="order-2 md:order-1">
+            <div className="aspect-[3/4] overflow-hidden bg-black/5 rounded-sm">
+              <img
+                src="/images/FOTO2.png"
+                alt="Artist Practice"
+                className="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity duration-1000"
+              />
+            </div>
+            <p className="font-mono text-[9px] uppercase tracking-widest mt-4 opacity-30 text-right">
+              Atmosphere / 02
+            </p>
+          </div>
+
+          {/* Artist Statement Text */}
+          <div className="order-1 md:order-2 flex flex-col justify-center">
+            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-12 opacity-40">Artist Statement</h3>
+            <GlassCard variant="default" dark className="!bg-white/10 !border-black/5 !backdrop-blur-sm">
+              <div className="space-y-8 font-display-serif italic text-xl md:text-2xl text-black/70 leading-relaxed font-light">
+                <p>
+                  I am a new media artist working at the intersection of body, technology, and intimacy. My practice investigates how human presence is transformed when mediated by digital systems, interfaces, and artificial intelligences.
+                </p>
+                <p>
+                  Through installations, video works, digital sculptures, and interactive experiences, I explore the idea of artificial intimacy and digital corporeality. Distortion operates as a central language — not as an aesthetic effect, but as a symptom of the tension between human sensibility and computational logic.
+                </p>
+                <p>
+                  My work is developed through experimental processes where research and creation occur simultaneously. Error, noise, and technical instability are part of the method, revealing states of vulnerability, desire, and fragmented presence in mediated environments.
+                </p>
+              </div>
             </GlassCard>
           </div>
         </div>

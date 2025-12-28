@@ -200,7 +200,7 @@ const BackgroundWaves = () => {
 
   // GUI Controls for Wave Background
   const controls = useControls('Wave Background', {
-    color: '#c4a484',
+    color: '#F0EEE9',
     emissiveColor: '#ffffff',
     largeWaves: {
       value: { x: 0.11, y: 2.60 },
