@@ -1,0 +1,263 @@
+import React, { useRef, useEffect } from 'react';
+import * as THREE from 'three';
+import { useFrame, extend, ThreeElement, useThree } from '@react-three/fiber';
+import { shaderMaterial } from '@react-three/drei';
+import { useControls } from 'leva';
+
+const WavesMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uMouse: new THREE.Vector2(0, 0),
+    uColor: new THREE.Color('#c4a484'),
+    uEmissiveColor: new THREE.Color('#ffffff'),
+    uLargeWavesFrequency: new THREE.Vector2(3.2, 6.02),
+    uLargeWavesSpeed: 0.55,
+    uLargeWavesMultiplier: 0.09,
+    uSmallWavesIterations: 3,
+    uSmallWavesFrequency: 4.1,
+    uSmallWavesSpeed: 0.07,
+    uSmallWavesMultiplier: 0.08,
+    uEmissivePower: 5.0,
+    uEmissiveLow: -0.353,
+    uEmissiveHigh: 0.436,
+    uNormalComputeShift: 0.0094,
+    uMouseFreqInfluence: 0.5,
+    uRoughness: 0.282,
+  },
+  // Vertex Shader
+  `
+  varying vec3 vPosition;
+  varying vec3 vNormal;
+  varying float vElevation;
+  uniform float uTime;
+  uniform vec2 uMouse;
+  
+  uniform vec2 uLargeWavesFrequency;
+  uniform float uLargeWavesSpeed;
+  uniform float uLargeWavesMultiplier;
+  uniform float uSmallWavesFrequency;
+  uniform float uSmallWavesSpeed;
+  uniform float uSmallWavesMultiplier;
+  uniform float uNormalComputeShift;
+  uniform float uMouseFreqInfluence;
+
+  vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+  float snoise(vec3 v){ 
+    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+    vec3 i  = floor(v + dot(v, C.yyy) );
+    vec3 x0 =   v - i + dot(i, C.xxx) ;
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min( g.xyz, l.zxy );
+    vec3 i2 = max( g.xyz, l.zxy );
+    vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+    vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+    vec3 x3 = x0 - D.yyy;
+    i = mod(i, 289.0 ); 
+    vec4 p = permute( permute( permute( 
+               i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+             + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
+             + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+    float n_ = 1.0/7.0;
+    vec3  ns = n_ * D.wyz - D.xzx;
+    vec4 j = p - 49.0 * floor(p * ns.z *ns.z);
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_ );
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    vec4 b0 = vec4( x.xy, y.xy );
+    vec4 b1 = vec4( x.zw, y.zw );
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+    vec3 p0 = vec3(a0.xy,h.x);
+    vec3 p1 = vec3(a0.zw,h.y);
+    vec3 p2 = vec3(a1.xy,h.z);
+    vec3 p3 = vec3(a1.zw,h.w);
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+  }
+
+  float getElevation(vec3 pos) {
+    float mouseDist = distance(pos.xy, uMouse);
+    float freqMod = 1.0 + smoothstep(8.0, 0.0, mouseDist) * uMouseFreqInfluence;
+
+    float elevation = sin(pos.x * uLargeWavesFrequency.x * freqMod + uTime * uLargeWavesSpeed) *
+                      sin(pos.y * uLargeWavesFrequency.y * freqMod + uTime * uLargeWavesSpeed) *
+                      uLargeWavesMultiplier;
+
+    float ridged = 0.0;
+    float sum = 0.0;
+
+    for(int i = 1; i <= 3; i++) {
+      float fi = float(i);
+      vec3 noiseInput = vec3(pos.xy * uSmallWavesFrequency * fi * freqMod, uTime * uSmallWavesSpeed);
+      float n = snoise(noiseInput) * 0.5 + 0.5;
+      float r = 1.0 - abs(2.0 * n - 1.0);
+      r = r * r;
+      ridged += r / fi;
+      sum += 1.0 / fi;
+    }
+
+    ridged /= sum;
+    elevation += (ridged - 0.5) * (uSmallWavesMultiplier);
+
+    float mouseInfluence = smoothstep(2.45, 0.0, mouseDist) * 0.03;
+    elevation += mouseInfluence;
+
+    return elevation;
+  }
+
+  void main() {
+    vec3 pos = position;
+    float elevation = getElevation(pos);
+    pos.z += elevation;
+
+    float shift = uNormalComputeShift;
+    vec3 posA = position + vec3(shift, 0.0, 0.0);
+    vec3 posB = position + vec3(0.0, shift, 0.0);
+    posA.z += getElevation(posA);
+    posB.z += getElevation(posB);
+
+    vec3 toA = normalize(posA - pos);
+    vec3 toB = normalize(posB - pos);
+    vNormal = normalize(cross(toA, toB));
+
+    vPosition = pos;
+    vElevation = elevation;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  }
+  `,
+  // Fragment Shader
+  `
+  varying vec3 vNormal;
+  varying float vElevation;
+
+  uniform vec3 uColor;
+  uniform vec3 uEmissiveColor;
+  uniform float uEmissivePower;
+  uniform float uEmissiveLow;
+  uniform float uEmissiveHigh;
+  uniform float uRoughness;
+
+  float remap(float value, float low1, float high1, float low2, float high2) {
+    return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
+  }
+
+  void main() {
+    float emissiveFactor = remap(vElevation, uEmissiveLow, uEmissiveHigh, 0.0, 1.0);
+    emissiveFactor = clamp(emissiveFactor, 0.0, 1.0);
+    emissiveFactor = pow(emissiveFactor, uEmissivePower);
+
+    vec3 finalColor = mix(uColor, uEmissiveColor, emissiveFactor);
+
+    // Iluminação Specular para aspecto "viscoso/molhado"
+    vec3 lightDirection = normalize(vec3(0.35, 0.35, 1.0));
+    vec3 viewDirection = normalize(vec3(0.0, 0.0, 1.0));
+    vec3 halfVector = normalize(lightDirection + viewDirection);
+    
+    float specPower = mix(100.0, 1.0, uRoughness);
+    float specular = pow(max(dot(normalize(vNormal), halfVector), 0.0), specPower);
+    
+    float lighting = clamp(dot(normalize(vNormal), lightDirection), 0.0, 1.0);
+    
+    finalColor += lighting * 0.1;
+    finalColor += specular * (1.0 - uRoughness) * 0.4;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+  `
+);
+
+extend({ WavesMaterial });
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    wavesMaterial: ThreeElement<typeof WavesMaterial>;
+  }
+}
+
+const BackgroundWaves = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const mousePos = useRef(new THREE.Vector2(0, 0));
+  const { viewport } = useThree();
+
+  // GUI Controls for Wave Background
+  const controls = useControls('Wave Background', {
+    color: '#c4a484',
+    emissiveColor: '#ffffff',
+    largeWaves: {
+      value: { x: 0.11, y: 2.60 },
+      step: 0.01,
+      label: 'Large Freq'
+    },
+    largeSpeed: { value: 0.92, min: 0, max: 2, step: 0.01 },
+    largeMultiplier: { value: 0.28, min: 0, max: 1, step: 0.01 },
+    smallFreq: { value: 0.8, min: 0, max: 10, step: 0.1 },
+    smallSpeed: { value: 0.27, min: 0, max: 1, step: 0.01 },
+    smallMultiplier: { value: 0.22, min: 0, max: 1, step: 0.01 },
+    emissivePower: { value: 6.3, min: 1, max: 20, step: 0.1 },
+    emissiveLow: { value: -0.40, min: -1, max: 1, step: 0.01 },
+    emissiveHigh: { value: 0.41, min: -1, max: 1, step: 0.01 },
+    roughness: { value: 0.57, min: 0, max: 1, step: 0.01 },
+    normalComputeShift: { value: 0.05, min: 0.001, max: 0.05, step: 0.0001 },
+    mouseFreqInfluence: { value: 0.13, min: 0, max: 2, step: 0.01 },
+  });
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      mousePos.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mousePos.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    const { clock } = state;
+    const material = meshRef.current.material as any;
+
+    material.uTime = clock.getElapsedTime();
+
+    const targetX = mousePos.current.x * (viewport.width / 2);
+    const targetY = mousePos.current.y * (viewport.height / 2);
+
+    material.uMouse.x = THREE.MathUtils.lerp(material.uMouse.x, targetX, 0.1);
+    material.uMouse.y = THREE.MathUtils.lerp(material.uMouse.y, targetY, 0.1);
+  });
+
+  return (
+    <mesh ref={meshRef} position={[0, 0, -2]}>
+      <planeGeometry args={[viewport.width * 1.5, viewport.height * 1.5, 256, 256]} />
+      <wavesMaterial
+        transparent
+        side={THREE.DoubleSide}
+        uColor={new THREE.Color(controls.color)}
+        uEmissiveColor={new THREE.Color(controls.emissiveColor)}
+        uLargeWavesFrequency={new THREE.Vector2(controls.largeWaves.x, controls.largeWaves.y)}
+        uLargeWavesSpeed={controls.largeSpeed}
+        uLargeWavesMultiplier={controls.largeMultiplier}
+        uSmallWavesFrequency={controls.smallFreq}
+        uSmallWavesSpeed={controls.smallSpeed}
+        uSmallWavesMultiplier={controls.smallMultiplier}
+        uEmissivePower={controls.emissivePower}
+        uEmissiveLow={controls.emissiveLow}
+        uEmissiveHigh={controls.emissiveHigh}
+        uNormalComputeShift={controls.normalComputeShift}
+        uMouseFreqInfluence={controls.mouseFreqInfluence}
+        uRoughness={controls.roughness}
+      />
+    </mesh>
+  );
+};
+
+export default BackgroundWaves;

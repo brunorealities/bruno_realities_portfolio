@@ -1,0 +1,13 @@
+# Blender 4.5.3 LTS MTL File: 'None'
+# www.blender.org
+
+newmtl HG_Body_.Human.002_BAKED
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/bruno/Desktop/BRUNO_ARQUIVOS/IntimidadeArtificial_Estudo/Assets_3D/texturas/Jillian_body_base color.png
+map_Ks C:/Users/bruno/Desktop/BRUNO_ARQUIVOS/IntimidadeArtificial_Estudo/Assets_3D/texturas/Jillian_body_specular.png
+map_Ns C:/Users/bruno/Desktop/BRUNO_ARQUIVOS/IntimidadeArtificial_Estudo/Assets_3D/texturas/Jillian_body_roughness.png
+map_Bump -bm 1.000000 C:/Users/bruno/Desktop/BRUNO_ARQUIVOS/IntimidadeArtificial_Estudo/Assets_3D/texturas/Jillian_body_normal.png
