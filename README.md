@@ -1,20 +1,68 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <img src="public/images/gestualintimacy_textured_edited.png" alt="Bruno Realities Hero" width="100%" />
 </div>
 
-# Run and deploy your AI Studio app
+# Bruno Realities - Digital Corporeality Portfolio
 
-This contains everything you need to run your app locally.
+An immersive 3D interactive portfolio exploring digital corporeality, biomorphic aesthetics, and artificial intimacy. This project blends advanced 3D rendering with atmospheric post-processing to create a unique digital experience.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1kVX761665bnwDnRLWGWmpzXQlRqiTMYN
+## 🌟 Key Features
 
-## Run Locally
+### 🔮 Organic 3D Core (`Scene.tsx`)
+The heart of the experience is a biomorphic sphere that floats and evolves. It features a custom shader mimicking translucent, liquid-like material ("liquid glass") that reacts dynamically to user interaction and scroll position, changing scale, position, and distortion levels.
 
-**Prerequisites:**  Node.js
+### 🖥️ Immersive Overlay (`Overlay.tsx`)
+A sophisticated UI layer that floats above the 3D world, managing:
+- **Digital Bodies**: The hero section.
+- **Manifesto**: A statement on artificial intimacy.
+- **Archive**: An interactive list of works.
+- **Contact**: Connection points.
 
+### 📺 Atmospheric Effects (`Effects.tsx`)
+The site evokes a retro-futuristic vibe through a custom post-processing pipeline:
+- **CRT Effect**: Scanlines and analog noise.
+- **Chromatic Aberration**: RGB shifts.
+- **Vignette**: Focusing attention on the center.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🖼️ Gallery
+
+<div align="center">
+  <img src="public/images/Escapismo.png" width="45%" alt="Escapismo" />
+  <img src="public/images/absentia.png" width="45%" alt="Absentia" />
+</div>
+<div align="center">
+  <img src="public/images/orgasmenhancer_render_fleshskin_5.png" width="45%" alt="Orgasm Enhancer" />
+  <img src="public/images/render_smiley.png" width="45%" alt="Smiley Render" />
+</div>
+
+## 🛠️ Tech Stack
+
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **3D Engine**: Three.js
+- **React 3D**: React Three Fiber (@react-three/fiber)
+- **Abstractions**: Drei (@react-three/drei)
+- **Post-Processing**: React Postprocessing
+- **Animation**: GSAP
+
+## 🚀 Run Locally
+
+This project contains everything you need to run the app locally.
+
+**Prerequisites:** Node.js
+
+1.  Install dependencies:
+    ```bash
+    npm install
+    ```
+
+2.  (Optional) Set the `GEMINI_API_KEY` in `.env.local` if you are using AI features.
+
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+
+## 📖 Documentation
+
+For a detailed guide on project structure, component behavior, and maintenance, please refer to [GUIA_DO_PROJETO.md](GUIA_DO_PROJETO.md).
