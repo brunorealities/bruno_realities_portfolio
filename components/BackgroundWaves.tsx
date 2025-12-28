@@ -20,9 +20,11 @@ const WavesMaterial = shaderMaterial(
     uEmissivePower: 5.0,
     uEmissiveLow: -0.353,
     uEmissiveHigh: 0.436,
-    uNormalComputeShift: 0.0094,
+    uNormalComputeShift: 0.02,
     uMouseFreqInfluence: 0.5,
     uRoughness: 0.282,
+    uMouseRadius: 2.5,
+    uMouseDepth: 1.0,
   },
   // Vertex Shader
   `
@@ -40,6 +42,8 @@ const WavesMaterial = shaderMaterial(
   uniform float uSmallWavesMultiplier;
   uniform float uNormalComputeShift;
   uniform float uMouseFreqInfluence;
+  uniform float uMouseRadius;
+  uniform float uMouseDepth;
 
   vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
   vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
@@ -110,8 +114,9 @@ const WavesMaterial = shaderMaterial(
     ridged /= sum;
     elevation += (ridged - 0.5) * (uSmallWavesMultiplier);
 
-    float mouseInfluence = smoothstep(2.45, 0.0, mouseDist) * 0.03;
-    elevation += mouseInfluence;
+    // Mouse Depression Logic
+    float mouseDepression = smoothstep(uMouseRadius, 0.0, mouseDist);
+    elevation -= pow(mouseDepression, 2.0) * uMouseDepth;
 
     return elevation;
   }
@@ -165,9 +170,12 @@ const WavesMaterial = shaderMaterial(
     vec3 halfVector = normalize(lightDirection + viewDirection);
     
     float specPower = mix(100.0, 1.0, uRoughness);
-    float specular = pow(max(dot(normalize(vNormal), halfVector), 0.0), specPower);
     
-    float lighting = clamp(dot(normalize(vNormal), lightDirection), 0.0, 1.0);
+    // Normalize vNormal and viewDir for accurate specular highlight
+    vec3 normal = normalize(vNormal);
+    float specular = pow(max(dot(normal, halfVector), 0.0), specPower);
+    
+    float lighting = clamp(dot(normal, lightDirection), 0.0, 1.0);
     
     finalColor += lighting * 0.1;
     finalColor += specular * (1.0 - uRoughness) * 0.4;
@@ -208,8 +216,10 @@ const BackgroundWaves = () => {
     emissiveLow: { value: -0.40, min: -1, max: 1, step: 0.01 },
     emissiveHigh: { value: 0.41, min: -1, max: 1, step: 0.01 },
     roughness: { value: 0.57, min: 0, max: 1, step: 0.01 },
-    normalComputeShift: { value: 0.05, min: 0.001, max: 0.05, step: 0.0001 },
+    normalComputeShift: { value: 0.02, min: 0.001, max: 0.05, step: 0.0001 },
     mouseFreqInfluence: { value: 0.13, min: 0, max: 2, step: 0.01 },
+    mouseDepth: { value: 1.0, min: 0.0, max: 2.0, step: 0.1 },
+    mouseRadius: { value: 2.5, min: 0.5, max: 5.0, step: 0.1 },
   });
 
   useEffect(() => {
@@ -228,8 +238,9 @@ const BackgroundWaves = () => {
 
     material.uTime = clock.getElapsedTime();
 
-    const targetX = mousePos.current.x * (viewport.width / 2);
-    const targetY = mousePos.current.y * (viewport.height / 2);
+    // Scale mouse to viewport geometry size (width * 1.5, height * 1.5)
+    const targetX = mousePos.current.x * (viewport.width * 1.5 / 2);
+    const targetY = mousePos.current.y * (viewport.height * 1.5 / 2);
 
     material.uMouse.x = THREE.MathUtils.lerp(material.uMouse.x, targetX, 0.1);
     material.uMouse.y = THREE.MathUtils.lerp(material.uMouse.y, targetY, 0.1);
@@ -237,7 +248,7 @@ const BackgroundWaves = () => {
 
   return (
     <mesh ref={meshRef} position={[0, 0, -2]}>
-      <planeGeometry args={[viewport.width * 1.5, viewport.height * 1.5, 256, 256]} />
+      <planeGeometry args={[viewport.width * 3.5, viewport.height * 3.5, 256, 256]} />
       <wavesMaterial
         transparent
         side={THREE.DoubleSide}
@@ -255,6 +266,8 @@ const BackgroundWaves = () => {
         uNormalComputeShift={controls.normalComputeShift}
         uMouseFreqInfluence={controls.mouseFreqInfluence}
         uRoughness={controls.roughness}
+        uMouseDepth={controls.mouseDepth}
+        uMouseRadius={controls.mouseRadius}
       />
     </mesh>
   );

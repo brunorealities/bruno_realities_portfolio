@@ -5,8 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Scene from './components/Scene';
 import Overlay from './components/Overlay';
 import ProjectDetail from './components/ProjectDetail';
-
+import { Leva } from 'leva';
 gsap.registerPlugin(ScrollTrigger);
+
+// Global Debug Toggle - Set to false to hide all controls by default
+const DEBUG = false;
 
 interface Project {
   title: string;
@@ -65,6 +68,7 @@ const App: React.FC = () => {
 
   return (
     <div ref={containerRef} className="relative w-full">
+      <Leva hidden={!DEBUG} collapsed />
       <div className={`canvas-container transition-opacity duration-[2.5s] ${selectedProject ? 'opacity-0' : 'opacity-100'}`}>
         <Scene progress={selectedProject ? 0.45 : scrollProgress} />
       </div>
