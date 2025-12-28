@@ -9,14 +9,17 @@ interface WorkModalProps {
     index: number;
     total: number;
     onClose: () => void;
+    onNext?: () => void;
+    onPrev?: () => void;
 }
 
-const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose }) => {
+const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose, onNext, onPrev }) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const backgroundRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
     const blocksRef = useRef<HTMLDivElement>(null);
+    const prevWorkRef = useRef<string>(work.title);
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -47,6 +50,20 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose }) =>
         };
     }, []);
 
+    // Effect to handle content change animation when navigating
+    useEffect(() => {
+        if (prevWorkRef.current !== work.title) {
+            const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 0.8 } });
+
+            tl.to([titleRef.current, blocksRef.current], { opacity: 0, y: -10, duration: 0.3 });
+            tl.set([titleRef.current, blocksRef.current], { y: 20 });
+            tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.8 });
+            tl.to(blocksRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.6");
+
+            prevWorkRef.current = work.title;
+        }
+    }, [work.title]);
+
     const handleClose = () => {
         const tl = gsap.timeline({
             defaults: { ease: "expo.inOut", duration: 0.8 },
@@ -65,11 +82,11 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose }) =>
     return (
         <div ref={modalRef} className="fixed inset-0 z-[1000] flex items-center justify-center bg-black overflow-hidden font-mono uppercase text-[10px] tracking-widest text-[#F2F0ED]">
             {/* Background Image with Overlay */}
-            <div ref={backgroundRef} className="absolute inset-0">
+            <div ref={backgroundRef} key={work.image} className="absolute inset-0">
                 <img
                     src={work.image}
                     alt={work.title}
-                    className="w-full h-full object-cover grayscale opacity-40"
+                    className="w-full h-full object-cover opacity-60"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
             </div>
@@ -133,7 +150,12 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose }) =>
                             </div>
 
                             <div className="flex items-center gap-12">
-                                <button className="opacity-30 hover:opacity-100 transition-opacity cursor-pointer">[PREV]</button>
+                                <button
+                                    onClick={onPrev}
+                                    className="opacity-30 hover:opacity-100 transition-opacity cursor-pointer"
+                                >
+                                    [PREV]
+                                </button>
 
                                 <button
                                     onClick={handleClose}
@@ -144,7 +166,12 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose }) =>
                                     </div>
                                 </button>
 
-                                <button className="opacity-30 hover:opacity-100 transition-opacity cursor-pointer">[NEXT]</button>
+                                <button
+                                    onClick={onNext}
+                                    className="opacity-30 hover:opacity-100 transition-opacity cursor-pointer"
+                                >
+                                    [NEXT]
+                                </button>
                             </div>
                         </div>
 

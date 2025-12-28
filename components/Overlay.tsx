@@ -182,6 +182,22 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
     "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=500&auto=format&fit=crop"
   ];
 
+  const handleCloseModal = () => setActiveWork(null);
+
+  const handleNextWork = () => {
+    if (!activeWork) return;
+    const currentIndex = works.findIndex(w => w.title === activeWork.title);
+    const nextIndex = (currentIndex + 1) % works.length;
+    setActiveWork(works[nextIndex]);
+  };
+
+  const handlePrevWork = () => {
+    if (!activeWork) return;
+    const currentIndex = works.findIndex(w => w.title === activeWork.title);
+    const prevIndex = (currentIndex - 1 + works.length) % works.length;
+    setActiveWork(works[prevIndex]);
+  };
+
   return (
     <main className="w-full text-black">
       {/* Work Modal */}
@@ -190,7 +206,9 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           work={activeWork}
           index={works.findIndex(w => w.title === activeWork.title)}
           total={works.length}
-          onClose={() => setActiveWork(null)}
+          onClose={handleCloseModal}
+          onNext={handleNextWork}
+          onPrev={handlePrevWork}
         />
       )}
 
@@ -199,14 +217,14 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         <div className="reveal flex flex-col items-center justify-center text-center">
           <div className="absolute top-10 left-10 text-left">
             <span className="metadata-label block mb-1">2025</span>
-            <span className="font-display-bold text-[10px] uppercase tracking-widest">Digital Corporeality Archive</span>
+            <span className="font-display-bold text-[10px] uppercase tracking-widest">digital corporeality archive</span>
           </div>
 
-          <LayeredTypography
+          {/* <LayeredTypography
             text="Bruno Realities"
             scrollProgress={scrollProgress}
             distortion={distortion}
-          />
+          /> */}
 
           <div className="absolute bottom-10 right-10 text-right hidden md:block">
             <GlassCard variant="compact" dark>

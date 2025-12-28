@@ -78,7 +78,7 @@ const App: React.FC = () => {
           onClick={scrollToTop}
           className="font-display-bold text-3xl tracking-tighter pointer-events-auto cursor-pointer text-black hover:opacity-50 transition-opacity uppercase"
         >
-          B
+          Bruno Realities
         </div>
 
         <div className="flex space-x-12 pointer-events-auto">
