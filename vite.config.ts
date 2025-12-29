@@ -1,10 +1,10 @@
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   return {
-    base: '/',
+    base: '/', // Mantém a raiz para a Vercel
     server: {
       port: 3000,
       host: '0.0.0.0',
@@ -16,25 +16,8 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      rollupOptions: {
-        output: {
-          assetFileNames: 'assets/[name][extname]',
-          chunkFileNames: 'assets/[name].js',
-          entryFileNames: 'assets/[name].js',
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('three')) {
-                return 'three';
-              }
-              if (id.includes('gsap')) {
-                return 'gsap';
-              }
-              return 'vendor';
-            }
-          },
-        },
-      },
-      chunkSizeWarningLimit: 1000,
+      // Removemos o manualChunks complexo para que o React e o Three fiquem juntos
+      chunkSizeWarningLimit: 2000,
     }
   };
 });
