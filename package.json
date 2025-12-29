@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "deploy:manual": "npm run build && cd dist && git init && git add . && git commit -m 'Manual deploy' && git push -f https://github.com/brunorealities/bruno_realities_portfolio.git main:gh-pages"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

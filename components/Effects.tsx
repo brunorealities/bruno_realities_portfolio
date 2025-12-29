@@ -16,22 +16,22 @@ const Effects = () => {
     return (
         <EffectComposer>
             {/* 1. Ruído Analógico (Noise) */}
-            {/*<Noise
-                opacity={0.08}
+            <Noise
+                opacity={0.1}
                 blendFunction={BlendFunction.OVERLAY} // Tente SOFT_LIGHT para algo mais sutil
-            />}
+            />
 
             {/* 2. Linhas de Varredura (Scanlines) */}
             <Scanline
-                density={1.2} // Quantidade de linhas
-                opacity={0.1} // Visibilidade das linhas
+                density={1.} // Quantidade de linhas
+                opacity={0.5} // Visibilidade das linhas
                 blendFunction={BlendFunction.OVERLAY}
             />
 
             {/* 3. Vinheta (Vignette) - Dá profundidade e foca no centro */}
-            {/*<Vignette
-                offset={0.5}
-                darkness={0.5}
+            <Vignette
+                offset={0.6}
+                darkness={.3}
                 eskil={false}
                 blendFunction={BlendFunction.NORMAL}
             />

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/images/gestualintimacy_textured_edited.png" alt="Bruno Realities Hero" width="100%" />
+  <img src="public/images/gestual_intimacy.png" alt="Bruno Realities Hero" width="100%" />
 </div>
 
 # Bruno Realities - Digital Corporeality Portfolio
@@ -31,7 +31,7 @@ The site evokes a retro-futuristic vibe through a custom post-processing pipelin
   <img src="public/images/absentia.png" width="45%" alt="Absentia" />
 </div>
 <div align="center">
-  <img src="public/images/orgasmenhancer_render_fleshskin_5.png" width="45%" alt="Orgasm Enhancer" />
+  <img src="public/images/orgasm_enhancer.png" width="45%" alt="Orgasm Enhancer" />
   <img src="public/images/render_smiley.png" width="45%" alt="Smiley Render" />
 </div>
 

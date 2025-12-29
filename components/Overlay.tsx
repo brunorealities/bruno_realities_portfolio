@@ -60,7 +60,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Escapismo",
       desc: "Synthetic escape through digital membranes.",
       longDesc: "Escapismo explores the desire to dissolve the physical body into digital space. Through a series of generative membranes, the work investigates the tension between the weight of biological existence and the perceived weightlessness of virtual presence.\n\nThe piece functions as a haptic mirror, reflecting the viewer's movements as fluid distortions in a synthetic skin.",
-      image: "/images/Escapismo.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Interactive Installation", "Digital Sculpture"],
       medium: "Hybrid",
@@ -70,7 +70,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Absentia",
       desc: "The presence of absence in virtual spaces.",
       longDesc: "Absentia is a study on the emotional residue left behind in digital environments. It focuses on the 'ghost' signals of human interaction—the traces of touch and intent that remain after a connection is severed.\n\nBy mapping these invisible patterns, the work creates a space for reflecting on the fragility of artificial intimacy.",
-      image: "/images/absentia.png",
+      image: "images/eros.png",
       year: "2024",
       tags: ["Video Art", "Generative Video"],
       medium: "Digital",
@@ -80,7 +80,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Assimétricos",
       desc: "Asymmetrical beauty in digital corporeality.",
       longDesc: "This project challenges the perfect symmetry often associated with digital avatars. By introducing intentional flaws and biomorphic irregularities, Assimétricos seeks a more 'human' form of digital representation.\n\nIt is an exploration of the uncanny valley, where distortion becomes a signifier of life and vulnerability.",
-      image: "/images/assimetricos.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Digital Sculpture", "Fine Art"],
       medium: "Digital",
@@ -90,7 +90,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Cotidiano",
       desc: "Everyday digital intimacy and synthetic touch.",
       longDesc: "Cotidiano captures the mundane moments of interaction with digital interfaces. It highlights the subtle textures of synthetic touch and the quiet intimacy found in our daily digital rituals.",
-      image: "/images/cotidiano.png",
+      image: "images/eros.png",
       year: "2024",
       tags: ["Illustration", "Digital Sculpture"],
       medium: "Digital",
@@ -100,7 +100,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Antropomórficos",
       desc: "Efeitos colaterais de sentir como humano.",
       longDesc: "Antropomórficos is an ongoing investigation into the physicalization of emotional data. The work translates complex human feelings—longing, desire, anxiety—into tactile, biomorphic forms that pulse and breathe.\n\nIt asks: what are the side effects of feeling like a human in a world of machines?",
-      image: "/images/eros.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Interactive Installation", "XR / Immersive Experience"],
       medium: "Hybrid",
@@ -110,7 +110,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Gestual Intimacy",
       desc: "Textured gestures in a digital landscape.",
       longDesc: "This work focuses on the translation of physical gestures into digital textures. It explores how the nuance of human movement can be preserved and amplified through generative processes.",
-      image: "/images/gestualintimacy_textured_edited.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Performance", "Generative Video"],
       medium: "Hybrid",
@@ -120,7 +120,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Não Correspondido",
       desc: "Unrequited signals in a fragmented presence.",
       longDesc: "Não Correspondido deals with the failure of communication in digital spaces. It visualizes the 'lost packets' of emotional intent, creating a landscape of fragmented signals and unfulfilled desires.",
-      image: "/images/nao_correspondido.png",
+      image: "images/eros.png",
       year: "2024",
       tags: ["Video Art", "Fine Art"],
       medium: "Digital",
@@ -130,7 +130,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "No Canto",
       desc: "Isolated moments of digital reflection.",
       longDesc: "A study on solitude within the hyper-connected digital realm. No Canto creates a quiet, peripheral space for contemplation and self-observation.",
-      image: "/images/nocanto1.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Digital Sculpture", "Wearable / Object"],
       medium: "Hybrid",
@@ -140,7 +140,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Offering",
       desc: "A digital offering of synthetic emotion.",
       longDesc: "Offering is a symbolic gesture of vulnerability in the digital age. It presents a synthetic heart, pulsing with data-driven emotions, as a gift to the network.",
-      image: "/images/offering-brunorealities-3DArt.png",
+      image: "images/eros.png",
       year: "2023",
       tags: ["Fine Art", "Digital Sculpture"],
       medium: "Digital",
@@ -150,7 +150,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Orgasm Enhancer",
       desc: "Flesh and skin rendered through digital interfaces.",
       longDesc: "This provocative piece explores the intersection of technology and human sexuality. It investigates how digital tools can amplify and distort our most intimate physical experiences.",
-      image: "/images/orgasmenhancer_render_fleshskin_5.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["Wearable / Object", "Interactive Installation"],
       medium: "Hybrid",
@@ -160,7 +160,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Smiley Render",
       desc: "Fragmented joy in a synthetic world.",
       longDesc: "Smiley Render deconstructs the most basic symbol of happiness. It reveals the complex, often distorted layers of data that lie beneath the surface of digital positivity.",
-      image: "/images/render_smiley.png",
+      image: "images/eros.png",
       year: "2024",
       tags: ["Illustration", "Generative Video"],
       medium: "Digital",
@@ -170,7 +170,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       title: "Underwater",
       desc: "Volumetric rendering of digital presence.",
       longDesc: "Underwater immerses the viewer in a dense, fluid digital environment. It explores the sensation of being submerged in data, where presence is felt through pressure and light rather than solid form.",
-      image: "/images/underwater_render3._volumepng_composer_detail.png",
+      image: "images/eros.png",
       year: "2025",
       tags: ["XR / Immersive Experience", "AR / WebAR"],
       medium: "Digital",
@@ -251,7 +251,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           <div className="order-2 md:order-1">
             <div className="aspect-[3/4] overflow-hidden bg-black/5 rounded-sm">
               <img
-                src="/images/FOTO2.png"
+                src="images/FOTO2.png"
                 alt="Artist Practice"
                 className="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity duration-1000"
               />
@@ -354,10 +354,10 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Processes & Experiments</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {[
-                { img: "/images/process/processo_human.jpeg", cap: "Experiment 001: Synthetic Skin Tension" },
-                { img: "/images/gestualintimacy_textured_edited.png", cap: "Experiment 002: Haptic Memory Mapping" },
-                { img: "/images/underwater_render3._volumepng_composer_detail.png", cap: "Experiment 003: Volumetric Presence" },
-                { img: "/images/textura.png", cap: "Experiment 004: Tactile Signal Research" }
+                { img: "images/process/processo_human.jpeg", cap: "Experiment 001: Synthetic Skin Tension" },
+                { img: "images/process/processo_human.jpeg", cap: "Experiment 002: Haptic Memory Mapping" },
+                { img: "images/process/processo_human.jpeg", cap: "Experiment 003: Volumetric Presence" },
+                { img: "images/process/processo_human.jpeg", cap: "Experiment 004: Tactile Signal Research" }
               ].map((exp, i) => (
                 <div key={i} className="group">
                   <div className="aspect-[16/9] overflow-hidden bg-black/5 mb-6">

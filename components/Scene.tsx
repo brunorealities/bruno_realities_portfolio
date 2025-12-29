@@ -10,7 +10,7 @@ import BackgroundWaves from './BackgroundWaves';
  * CONFIGURAÇÃO DE MODELO:
  */
 const MODEL_CONFIG = {
-  path: '/models/serhibrido_decimate.obj',
+  path: 'models/serhibrido_decimate.obj',
   scale: .8,
   position: [0, -3, 0] as [number, number, number],
 };
@@ -27,9 +27,9 @@ const FlexibleModel = React.forwardRef(({ path, scale, position }: {
 
   // Carregamento das texturas
   const textures = useTexture({
-    map: '/texturas/basecolor.png',
-    normalMap: '/texturas/normal.png',
-    roughnessMap: '/texturas/roughness.png',
+    map: 'texturas/basecolor.png',
+    normalMap: 'texturas/normal.png',
+    roughnessMap: 'texturas/roughness.png',
   });
 
   // Configuração das texturas
