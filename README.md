@@ -56,7 +56,7 @@ This project contains everything you need to run the app locally.
     npm install
     ```
 
-2.  (Optional) Set the `GEMINI_API_KEY` in `.env.local` if you are using AI features.
+2.  (Optional) Setup environment variables if needed.
 
 3.  Run the development server:
     ```bash
