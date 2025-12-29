@@ -1,43 +1,71 @@
 
 import React from 'react';
-import { EffectComposer, Noise, Vignette, Scanline, ChromaticAberration } from '@react-three/postprocessing';
+import {
+    EffectComposer,
+    Vignette,
+    Scanline,
+    Bloom
+} from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
+import { useControls, folder } from 'leva';
 
 /**
  * Effects: Componente modular para gerenciar o pós-processamento do site.
  * 
- * O QUE VOCÊ PODE AJUSTAR:
- * - Noise: Adiciona granulado (ruído) para parecer sinal analógico.
- * - Scanline: Cria as linhas horizontais típicas de TVs antigas.
- * - Vignette: Escurece as bordas da tela.
- * - ChromaticAberration: Cria aquele "desvio" de cor nas bordas (RGB split).
+ * Mantido apenas o essencial para uma estética "Elegante e Sutil":
+ * - Bloom: Brilho suave nas altas luzes.
+ * - Scanline: Linhas de varredura quase imperceptíveis.
+ * - Vignette: Enquadramento sutil das bordas.
  */
 const Effects = () => {
+    const {
+        bloomEnabled, bloomIntensity, bloomLuminanceThreshold,
+        vignetteEnabled, vignetteOffset, vignetteDarkness,
+        scanlineEnabled, scanlineDensity, scanlineOpacity
+    } = useControls('Post Processing', {
+        'Bloom': folder({
+            bloomEnabled: { value: true, label: 'Enabled' },
+            bloomIntensity: { value: 0.06, min: 0, max: 5, label: 'Intensity' },
+            bloomLuminanceThreshold: { value: 1., min: 0, max: 1, label: 'Threshold' },
+        }),
+        'Vignette': folder({
+            vignetteEnabled: { value: true, label: 'Enabled' },
+            vignetteOffset: { value: 0.5, min: 0, max: 1, label: 'Offset' },
+            vignetteDarkness: { value: 0.4, min: 0, max: 1, label: 'Darkness' },
+        }),
+        'Scanline': folder({
+            scanlineEnabled: { value: true, label: 'Enabled' },
+            scanlineDensity: { value: 1.45, min: 0.1, max: 5, label: 'Density' },
+            scanlineOpacity: { value: 0.05, min: 0, max: 0.2, label: 'Opacity' },
+        }),
+    });
+
     return (
         <EffectComposer>
-            {/* 1. Ruído Analógico (Noise) */}
-            <Noise
-                opacity={0.1}
-                blendFunction={BlendFunction.OVERLAY} // Tente SOFT_LIGHT para algo mais sutil
-            />
+            {bloomEnabled && (
+                <Bloom
+                    intensity={bloomIntensity}
+                    luminanceThreshold={bloomLuminanceThreshold}
+                    mipmapBlur
+                />
+            )}
 
-            {/* 2. Linhas de Varredura (Scanlines) */}
-            <Scanline
-                density={1.} // Quantidade de linhas
-                opacity={0.5} // Visibilidade das linhas
-                blendFunction={BlendFunction.OVERLAY}
-            />
+            {scanlineEnabled && (
+                <Scanline
+                    density={scanlineDensity}
+                    opacity={scanlineOpacity}
+                    blendFunction={BlendFunction.OVERLAY}
+                />
+            )}
 
-            {/* 3. Vinheta (Vignette) - Dá profundidade e foca no centro */}
-            <Vignette
-                offset={0.6}
-                darkness={.3}
-                eskil={false}
-                blendFunction={BlendFunction.NORMAL}
-            />
-
-            {/* 4. Aberração Cromática - O toque final para o look analógico */}
-
+            {vignetteEnabled && (
+                <Vignette
+                    offset={vignetteOffset}
+                    darkness={vignetteDarkness}
+                    eskil={false}
+                    blendFunction={BlendFunction.NORMAL}
+                />
+            )}
         </EffectComposer>
     );
 };
