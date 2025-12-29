@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/bruno_realities_portfolio/',
+    base: '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
@@ -26,8 +26,20 @@ export default defineConfig(({ mode }) => {
           assetFileNames: 'assets/[name][extname]',
           chunkFileNames: 'assets/[name].js',
           entryFileNames: 'assets/[name].js',
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three')) {
+                return 'three';
+              }
+              if (id.includes('gsap')) {
+                return 'gsap';
+              }
+              return 'vendor';
+            }
+          },
         },
       },
+      chunkSizeWarningLimit: 1000,
     }
   };
 });
