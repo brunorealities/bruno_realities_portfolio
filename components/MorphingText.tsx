@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 const phrases = [
     "intimacy as interface",
     "the body becomes image",
-    "presence, fragmented",
+    "fragmented presence",
     "desire mediated by systems",
     "contact without touch",
     "the archive is alive"
@@ -22,12 +22,12 @@ const MorphingText: React.FC = () => {
             });
 
             tl.to(textRef.current, {
-                opacity: 0.15, // Opacidade baixa para parecer marca d'água
+                opacity: 0.08, // Valor bem sutil para não distrair do conteúdo principalrantir impacto visual no fundo
                 duration: 2,
                 delay: 0.5
             })
                 .to(textRef.current, {
-                    opacity: 0,
+                    opacity: 0.0,
                     duration: 1.5,
                     delay: 4,
                     onComplete: () => {
@@ -43,11 +43,18 @@ const MorphingText: React.FC = () => {
         /* inset-0 faz com que ele ocupe a tela toda. 
            pointer-events-none impede que o texto bloqueie cliques nos menus.
            z-0 ou z-[-1] coloca ele para trás dos elementos principais. */
-        <div className="fixed inset-0 flex justify-center items-center pointer-events-none z-0">
+        <div className="fixed inset-0 flex justify-center items-center pointer-events-none z-[1] overflow-hidden">
             <div
                 ref={textRef}
-                /* text-6xl a 9xl para ficar realmente grande como no design */
-                className="font-mono text-5xl md:text-9xl uppercase tracking-[0.2em] text-black opacity-0 text-center select-none px-4 leading-tight"
+                style={{
+                    fontSize: '16vw',
+                    lineHeight: '0.7',
+                    fontFamily: "'Inter', sans-serif", // Usando Inter para poder usar Bold alto
+                    fontWeight: 900,
+                    display: 'block',
+                    mixBlendMode: 'multiply' // Faz com que o texto "manche" o fundo branco/brilhante
+                }}
+                className="uppercase tracking-[-0.05em] text-black opacity-0 text-center select-none whitespace-normal w-full"
             >
                 {phrases[index]}
             </div>

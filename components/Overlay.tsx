@@ -232,11 +232,10 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </GlassCard>
           </div>
 
-          {/* Morphing Dynamic Statement */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xs pointer-events-none">
-            <MorphingText />
-          </div>
         </div>
+
+        {/* Morphing Dynamic Statement - Moved outside .reveal to bypass transform-parent constraints */}
+        <MorphingText />
       </section>
 
       {/* ABOUT SECTION (Artist Statement) */}
