@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import LayeredTypography from './LayeredTypography';
 import HorizontalCarousel, { Work } from './HorizontalCarousel';
 import WorkModal from './WorkModal';
 import GlassCard from './GlassCard';
@@ -222,11 +221,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             {/*<span className="font-display-bold text-[10px] uppercase tracking-widest">digital corporeality archive</span>*/}
           </div>
 
-          {/* <LayeredTypography
-            text="Bruno Realities"
-            scrollProgress={scrollProgress}
-            distortion={distortion}
-          /> */}
+
 
           <div className="absolute bottom-10 right-10 text-right hidden md:block">
             <GlassCard variant="compact" dark>
