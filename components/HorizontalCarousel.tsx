@@ -99,27 +99,29 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({ works, onWorkCl
         <div ref={containerRef} className="w-full overflow-hidden py-20 cursor-grab">
             <div ref={sliderRef} className="flex gap-12 px-20 will-change-transform">
                 {works.map((work, idx) => (
-                    <div
-                        key={idx}
-                        className="flex-shrink-0 w-[80vw] md:w-[40vw] cursor-pointer"
-                        onClick={() => onWorkClick(work)}
-                    >
-                        <div className="aspect-[16/10] w-full overflow-hidden bg-black/5 mb-6 group relative">
-                            <img
-                                src={work.image}
-                                alt={work.title}
-                                className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000"
-                            />
-                            <div className="absolute top-6 left-6 mix-blend-difference text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                <span className="font-system text-[10px] tracking-widest leading-none">{work.year}</span>
+                    <div key={idx} className="flex flex-shrink-0 items-stretch gap-12">
+                        {idx > 0 && <div className="w-[1px] bg-black/5" />}
+                        <div
+                            className="w-[80vw] md:w-[40vw] cursor-pointer"
+                            onClick={() => onWorkClick(work)}
+                        >
+                            <div className="aspect-[16/10] w-full overflow-hidden bg-black/5 mb-6 group relative">
+                                <img
+                                    src={work.image}
+                                    alt={work.title}
+                                    className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000"
+                                />
+                                <div className="absolute top-6 left-6 mix-blend-difference text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <span className="font-system text-[10px] tracking-widest leading-none">{work.year}</span>
+                                </div>
                             </div>
+                            <h4 className="font-system text-[3vw] md:text-[1.8vw] tracking-tighter leading-none mb-4 opacity-90">
+                                {work.title}
+                            </h4>
+                            <p className="font-body text-lg md:text-xl text-black/60 max-w-sm uppercase-none">
+                                {work.desc}
+                            </p>
                         </div>
-                        <h4 className="font-system text-[3vw] md:text-[1.8vw] tracking-tighter leading-none mb-4 opacity-90">
-                            {work.title}
-                        </h4>
-                        <p className="font-body text-lg md:text-xl text-black/60 max-w-sm uppercase-none">
-                            {work.desc}
-                        </p>
                     </div>
                 ))}
             </div>

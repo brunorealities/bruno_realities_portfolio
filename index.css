@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+
 /* Global styles */
 :root {
   --cloud-dancer: #F2F0ED;

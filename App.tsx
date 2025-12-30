@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Scene from './components/Scene';
 import Overlay from './components/Overlay';
 import ProjectDetail from './components/ProjectDetail';
+import CustomCursor from './components/CustomCursor';
 import { Leva } from 'leva';
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,6 +69,7 @@ const App: React.FC = () => {
 
   return (
     <div ref={containerRef} className="relative w-full">
+      <CustomCursor />
       <Leva hidden={!DEBUG} collapsed />
       <div className={`canvas-container transition-opacity duration-[2.5s] ${selectedProject ? 'opacity-0' : 'opacity-100'}`}>
         <Scene progress={selectedProject ? 0.45 : scrollProgress} />

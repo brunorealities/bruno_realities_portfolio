@@ -239,6 +239,9 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         </div>
       </section>
 
+      {/* Structural Divider */}
+      <div className="divider-dark" />
+
       {/* ABOUT SECTION (Artist Statement) */}
       {/* ABOUT SECTION (Artist Statement) - Focus & Reference Typography */}
       <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
@@ -282,14 +285,19 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         </div>
       </section>
 
+      {/* Structural Divider */}
+      <div className="divider-dark" />
+
       {/* WORKS SECTION */}
       <section id="works" className="min-h-screen py-40 border-t border-black/5">
         <div className="px-10 mb-20 reveal">
           <div className="flex gap-8 items-baseline">
-            <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Works</h2>
-            <span className="font-system text-[9px] opacity-40">Selected Projects</span>
+            <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Selected Works</h2>
+            <span className="font-system text-[9px] opacity-40">new media works</span>
           </div>
         </div>
+
+        <div className="divider-dark opacity-50 mb-20" />
 
         <div className="reveal">
           <HorizontalCarousel
@@ -298,6 +306,9 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           />
         </div>
       </section>
+
+      {/* Structural Divider */}
+      <div className="divider-dark" />
 
       {/* RESEARCH SECTION */}
       <section id="research" className="min-h-screen py-40 px-10 bg-black/2 relative overflow-hidden">
@@ -360,6 +371,9 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
         </div>
       </section>
+
+      {/* Structural Divider */}
+      <div className="divider-dark" />
 
       {/* CONTACT SECTION */}
       <section id="contact" className="min-h-screen flex items-center justify-center px-10">
