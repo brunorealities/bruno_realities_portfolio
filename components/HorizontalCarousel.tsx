@@ -101,7 +101,7 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({ works, onWorkCl
                 {works.map((work, idx) => (
                     <div
                         key={idx}
-                        className="flex-shrink-0 w-[70vw] md:w-[40vw] cursor-pointer"
+                        className="flex-shrink-0 w-[80vw] md:w-[40vw] cursor-pointer"
                         onClick={() => onWorkClick(work)}
                     >
                         <div className="aspect-[16/10] w-full overflow-hidden bg-black/5 mb-6 group relative">

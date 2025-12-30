@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, Suspense } from 'react';
 import * as THREE from 'three';
-import { useFrame, Canvas, extend, useLoader } from '@react-three/fiber';
+import { useFrame, Canvas, extend, useLoader, useThree } from '@react-three/fiber';
 import { Float, Environment, PerspectiveCamera, useGLTF, useFBX, useTexture } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import Effects from './Effects';
@@ -106,15 +106,27 @@ const FlexibleModel = React.forwardRef(({ path, scale, position }: {
 });
 
 const SceneContent = ({ progress }: { progress: number }) => {
+  const { viewport } = useThree();
+  const isMobile = viewport.width < 7;
+
   const modelRef = useRef<any>(null);
   const groupRef = useRef<THREE.Group>(null);
 
-  const sectionStates = useMemo(() => ({
-    about: { position: [0, 2, 0], scale: 2., distortion: 0.15, opacity: 1.0, rotationSpeed: 0.9 },
+  const desktopStates = useMemo(() => ({
+    about: { position: [0, 2, 0], scale: 2.0, distortion: 0.15, opacity: 1.0, rotationSpeed: 0.9 },
     works: { position: [2.0, 0, -1], scale: 1.5, distortion: 0.1, opacity: 1.0, rotationSpeed: 0.8 },
     research: { position: [-2.2, 0, -2], scale: 0.9, distortion: 0.2, opacity: 1.0, rotationSpeed: 0.2 },
     contact: { position: [0, -.25, 0], scale: 0.4, distortion: 0.05, opacity: 1.0, rotationSpeed: 2.0 }
   }), []);
+
+  const mobileStates = useMemo(() => ({
+    about: { position: [0, 1.4, 0], scale: 1.5, distortion: 0.15, opacity: 1.0, rotationSpeed: 0.9 },
+    works: { position: [0, 0, -1], scale: 1.2, distortion: 0.1, opacity: 1.0, rotationSpeed: 0.8 },
+    research: { position: [0, 0, -2], scale: 0.7, distortion: 0.2, opacity: 1.0, rotationSpeed: 0.2 },
+    contact: { position: [0.2, 0, 0], scale: 0.8, distortion: 0.05, opacity: 1.0, rotationSpeed: 2.0 }
+  }), []);
+
+  const currentStates = isMobile ? mobileStates : desktopStates;
 
   useFrame((state) => {
     const { clock } = state;
@@ -123,15 +135,17 @@ const SceneContent = ({ progress }: { progress: number }) => {
 
     let target;
     if (progress < 0.3) {
-      target = interpolate(sectionStates.about, sectionStates.works, progress / 0.3);
+      target = interpolate(currentStates.about, currentStates.works, progress / 0.3);
     } else if (progress < 0.7) {
-      target = interpolate(sectionStates.works, sectionStates.research, (progress - 0.3) / 0.4);
+      target = interpolate(currentStates.works, currentStates.research, (progress - 0.3) / 0.4);
     } else {
-      target = interpolate(sectionStates.research, sectionStates.contact, (progress - 0.7) / 0.3);
+      target = interpolate(currentStates.research, currentStates.contact, (progress - 0.7) / 0.3);
     }
 
     const lerpSpeed = 0.04;
     groupRef.current.position.lerp(new THREE.Vector3(...target.position), lerpSpeed);
+
+    // Scaling is now handled directly by the selected state object
     const s = THREE.MathUtils.lerp(groupRef.current.scale.x, target.scale, lerpSpeed);
     groupRef.current.scale.set(s, s, s);
 

@@ -27,6 +27,7 @@ interface OverlayProps {
 
 const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, distortion }) => {
   const [activeWork, setActiveWork] = useState<Work | null>(null);
+  const [isAboutRevealed, setIsAboutRevealed] = useState(false);
 
   useEffect(() => {
     const sections = document.querySelectorAll('.reveal');
@@ -240,10 +241,10 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
       {/* ABOUT SECTION (Artist Statement) */}
       {/* ABOUT SECTION (Artist Statement) - Focus & Reference Typography */}
-      <section id="about" className="relative min-h-screen w-full overflow-hidden bg-black group/about">
+      <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
 
         {/* Full-screen Background Image with Focus Interaction */}
-        <div className="absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100">
+        <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none scale-100 opacity-100' : ''}`}>
           <img
             src="images/FOTO2.png"
             alt="Artist Portrait"
