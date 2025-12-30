@@ -80,7 +80,7 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose, onNe
     };
 
     return (
-        <div ref={modalRef} className="fixed inset-0 z-[1000] flex items-center justify-center bg-black overflow-hidden font-mono uppercase text-[10px] tracking-widest text-[#F2F0ED]">
+        <div ref={modalRef} className="fixed inset-0 z-[1000] flex items-center justify-center bg-black overflow-hidden font-system text-[10px] tracking-widest text-[#F2F0ED]">
             {/* Background Image with Overlay */}
             <div ref={backgroundRef} key={work.image} className="absolute inset-0">
                 <img
@@ -120,7 +120,7 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose, onNe
                         <div className="overflow-hidden">
                             <h2
                                 ref={titleRef}
-                                className="font-display-bold text-[18vw] leading-[0.8] tracking-tighter-massive text-center text-white"
+                                className="font-system text-[18vw] leading-[0.8] tracking-tighter-massive text-center text-white opacity-90"
                                 style={{
                                     fontStretch: 'extra-condensed',
                                 }}
@@ -136,8 +136,8 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose, onNe
                         {/* Description (Bottom-Left) */}
                         <div className="max-w-sm pointer-events-auto">
                             <GlassCard variant="compact" dark className="!bg-black/20 !border-white/5 !backdrop-blur-md !p-6">
-                                <h4 className="opacity-30 mb-4 text-[8px] tracking-[0.3em]">CONCEPT_NOTE</h4>
-                                <p className="font-display-serif italic text-base md:text-lg text-white/80 leading-relaxed normal-case tracking-normal">
+                                <h4 className="font-system opacity-30 mb-4 text-[8px] tracking-[0.3em]">CONCEPT_NOTE</h4>
+                                <p className="font-body text-base md:text-lg text-white/80 leading-relaxed normal-case tracking-normal">
                                     {work.longDesc.split('\n')[0].substring(0, 180)}...
                                 </p>
                             </GlassCard>
@@ -180,12 +180,12 @@ const WorkModal: React.FC<WorkModalProps> = ({ work, index, total, onClose, onNe
                             <GlassCard variant="compact" dark className="!bg-black/20 !border-white/5 !backdrop-blur-md !p-6">
                                 <div className="space-y-6">
                                     <div>
-                                        <h4 className="opacity-30 mb-2 text-[8px] tracking-[0.3em]">FORMAT</h4>
-                                        <p className="text-white font-bold tracking-widest">{work.medium}</p>
+                                        <h4 className="font-system opacity-30 mb-2 text-[8px] tracking-[0.3em]">FORMAT</h4>
+                                        <p className="font-system text-white tracking-widest">{work.medium}</p>
                                     </div>
                                     <div>
-                                        <h4 className="opacity-30 mb-2 text-[8px] tracking-[0.3em]">CONTEXT</h4>
-                                        <p className="text-white font-bold tracking-widest">{work.context}</p>
+                                        <h4 className="font-system opacity-30 mb-2 text-[8px] tracking-[0.3em]">CONTEXT</h4>
+                                        <p className="font-system text-white tracking-widest">{work.context}</p>
                                     </div>
                                 </div>
                             </GlassCard>

@@ -111,13 +111,13 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({ works, onWorkCl
                                 className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000"
                             />
                             <div className="absolute top-6 left-6 mix-blend-difference text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                <span className="font-mono text-[10px] uppercase tracking-widest">{work.year}</span>
+                                <span className="font-system text-[10px] tracking-widest leading-none">{work.year}</span>
                             </div>
                         </div>
-                        <h4 className="font-display-bold text-[3vw] md:text-[2vw] uppercase tracking-tighter leading-none mb-4">
+                        <h4 className="font-system text-[3vw] md:text-[1.8vw] tracking-tighter leading-none mb-4 opacity-90">
                             {work.title}
                         </h4>
-                        <p className="font-display-serif italic text-lg md:text-xl text-black/60 max-w-sm">
+                        <p className="font-body text-lg md:text-xl text-black/60 max-w-sm uppercase-none">
                             {work.desc}
                         </p>
                     </div>

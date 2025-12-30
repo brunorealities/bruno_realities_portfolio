@@ -217,15 +217,13 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <section id="hero" className="min-h-screen flex flex-col justify-center px-10 relative overflow-hidden">
         <div className="reveal flex flex-col items-center justify-center text-center">
           <div className="absolute top-10 left-10 text-left">
-            {/* <span className="metadata-label block mb-1">2025</span> */}
-            {/*<span className="font-display-bold text-[10px] uppercase tracking-widest">digital corporeality archive</span>*/}
+            <h1 className="font-system text-xl md:text-2xl tracking-[0.2em] opacity-90">Bruno Realities</h1>
+            <span className="font-system text-[9px] opacity-40 block mt-1 leading-none">Digital Corporeality Archive</span>
           </div>
 
-
-
-          <div className="absolute bottom-10 right-10 text-right hidden md:block">
+          <div className="absolute bottom-10 right-10 text-right hidden md:block text-black">
             <GlassCard variant="compact" dark>
-              <p className="metadata-label leading-relaxed">
+              <p className="font-system text-[9px] leading-relaxed opacity-60">
                 Phase: Fragmented<br />
                 Status: Actuated
               </p>
@@ -239,49 +237,56 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       </section>
 
       {/* ABOUT SECTION (Artist Statement) */}
-      <section id="about" className="min-h-screen py-32 px-10 flex items-center justify-center">
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-20 items-center reveal">
-          {/* Aligned Image */}
-          <div className="order-2 md:order-1">
-            <div className="aspect-[3/4] overflow-hidden bg-black/5 rounded-sm">
-              <img
-                src="images/FOTO2.png"
-                alt="Artist Practice"
-                className="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity duration-1000"
-              />
+      {/* ABOUT SECTION (Artist Statement) - Cinematic Full-screen Portrait */}
+      <section id="about" className="relative min-h-screen w-full overflow-hidden bg-black group/about">
+
+        {/* Full-screen Background Image with Hover Interaction */}
+        <div className="absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale opacity-30 group-hover/about:grayscale-0 group-hover/about:opacity-100 scale-105 group-hover/about:scale-100">
+          <img
+            src="images/FOTO2.png"
+            alt="Artist Portrait"
+            className="w-full h-full object-cover"
+          />
+          {/* Subtle gradient overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 xl:from-black/60" />
+        </div>
+
+        {/* Overlaid UI Elements and Text */}
+        <div className="relative z-10 h-full min-h-screen flex flex-col justify-between p-10 md:p-20 pointer-events-none">
+
+          {/* Top: Systemic Label */}
+          <div className="reveal flex justify-start">
+            <div className="border-t border-white/20 pt-4">
+              <span className="font-system text-[9px] text-white opacity-40 block mb-1">Ref. AI-00 // Archive</span>
+              <h3 className="font-system text-[11px] text-white tracking-[0.3em] opacity-80 uppercase leading-none">Artist Statement</h3>
             </div>
-            <p className="font-mono text-[9px] uppercase tracking-widest mt-4 opacity-30 text-right">
-              Atmosphere / 02
-            </p>
           </div>
 
-          {/* Artist Statement Text */}
-          <div className="order-1 md:order-2 flex flex-col justify-center">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-12 opacity-40">Artist Statement</h3>
-            <GlassCard variant="default" dark className="!bg-white/10 !border-black/5 !backdrop-blur-sm">
-              <div className="space-y-8 font-display-serif italic text-xl md:text-2xl text-black/70 leading-relaxed font-light">
-                <p>
-                  I am a new media artist working at the intersection of body, technology, and intimacy. My practice investigates how human presence is transformed when mediated by digital systems, interfaces, and artificial intelligences.
-                </p>
-                <p>
-                  Through installations, video works, digital sculptures, and interactive experiences, I explore the idea of artificial intimacy and digital corporeality. Distortion operates as a central language — not as an aesthetic effect, but as a symptom of the tension between human sensibility and computational logic.
-                </p>
-                <p>
-                  My work is developed through experimental processes where research and creation occur simultaneously. Error, noise, and technical instability are part of the method, revealing states of vulnerability, desire, and fragmented presence in mediated environments.
-                </p>
+          {/* Bottom-Right: Elegant Minimalist Statement */}
+          <div className="reveal flex justify-end items-end">
+            <div className="max-w-xl text-right pointer-events-auto">
+              <p className="font-body text-xl md:text-2xl text-white/90 leading-relaxed mb-8">
+                I am a new media artist working at the intersection of body, technology, and intimacy. My practice investigates how human presence is transformed when mediated by digital systems, interfaces, and artificial intelligences.
+              </p>
+              <p className="font-body text-xl md:text-2xl text-white/90 leading-relaxed">
+                Through installations and biomorphic distortion, I explore the idea of artificial intimacy and digital corporeality. Distortion operates as a central language — a symptom of the tension between human sensibility and computational logic.
+              </p>
+
+              <div className="mt-12 flex justify-end items-center gap-6 opacity-30">
+                <span className="font-system text-[9px] text-white tracking-[0.4em]">status.presence // active</span>
+                <div className="w-12 h-[1px] bg-white/40"></div>
               </div>
-            </GlassCard>
+            </div>
           </div>
+
         </div>
       </section>
 
       <section className="min-h-[60vh] flex flex-col items-center justify-center px-10">
         <div className="max-w-5xl reveal text-center">
-          <GlassCard variant="hero" dark>
-            <p className="font-display-serif italic text-3xl md:text-5xl leading-tight font-light text-black/80">
-              We push the limits of <span className="text-black not-italic font-bold">innovation</span> to craft <span className="text-black italic">immersive</span> experiences that <span className="underline underline-offset-8 decoration-black/10">captivate</span> and engage.
-            </p>
-          </GlassCard>
+          <p className="font-body text-3xl md:text-5xl leading-[1.3] text-black/80 max-w-4xl mx-auto">
+            We push the limits of <span className="font-system text-[0.6em] align-middle px-4 opacity-50 tracking-widest text-black">innovation</span> to craft immersive experiences that <span className="underline underline-offset-8 decoration-black/10">captivate</span> and engage.
+          </p>
         </div>
       </section>
 
@@ -289,8 +294,8 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <section id="works" className="min-h-screen py-40 border-t border-black/5">
         <div className="px-10 mb-20 reveal">
           <div className="flex gap-8 items-baseline">
-            <h2 className="font-display-bold text-[6vw] uppercase tracking-tighter-massive leading-none">Works</h2>
-            <span className="metadata-label">Selected Projects</span>
+            <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Works</h2>
+            <span className="font-system text-[9px] opacity-40">Selected Projects</span>
           </div>
         </div>
 
@@ -308,39 +313,37 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
           {/* 1. Intro Text */}
           <div className="mb-32 reveal">
-            <div className="flex gap-8 items-baseline mb-12">
-              <h2 className="font-display-bold text-[6vw] uppercase tracking-tighter-massive leading-none">Research</h2>
-              <span className="metadata-label">Concept Study / 001</span>
+            <div className="flex gap-8 items-baseline mb-12 border-t border-black/10 pt-4">
+              <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Research</h2>
+              <span className="font-system text-[9px] opacity-40">Concept Study / 001</span>
             </div>
-            <GlassCard variant="hero" dark className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <p className="font-display-serif italic text-2xl text-black/70 leading-relaxed">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-l border-black/5 pl-10 ml-4">
+              <p className="font-body text-2xl text-black/70 leading-relaxed uppercase-none">
                 Our research explores the boundaries of artificial intimacy, investigating how digital interfaces can mediate and amplify human emotion. We look at the body not as a fixed biological entity, but as a fluid signal in a network of synthetic desires.
               </p>
-              <p className="font-display-serif italic text-2xl text-black/70 leading-relaxed">
+              <p className="font-body text-2xl text-black/70 leading-relaxed uppercase-none">
                 Through embodied experimentation and biomorphic distortion, we seek to understand the symptoms of digital corporeality. Our focus is on the tactile translation of presence and the visceral impact of mediated touch.
               </p>
-            </GlassCard>
+            </div>
           </div>
 
           {/* 2. Lines of Investigation */}
-          <div className="mb-40 reveal">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Lines of Investigation</h3>
-            <GlassCard variant="default" dark>
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-12">
-                {[
-                  "Artificial Intimacy",
-                  "Body as Interface",
-                  "Distortion as Symptom",
-                  "Mediated Desire",
-                  "Fragmented Presence"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group">
-                    <span className="w-2 h-2 rounded-full bg-black/10 group-hover:bg-black transition-colors"></span>
-                    <span className="font-display-bold text-xl uppercase tracking-tighter">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </GlassCard>
+          <div className="mb-40 reveal px-4">
+            <h3 className="font-system text-[10px] tracking-[0.3em] mb-10 opacity-40">Lines of Investigation</h3>
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-12 opacity-80">
+              {[
+                "Artificial Intimacy",
+                "Body as Interface",
+                "Distortion as Symptom",
+                "Mediated Desire",
+                "Fragmented Presence"
+              ].map((item, i) => (
+                <li key={i} className="flex items-center gap-4 group">
+                  <span className="w-1 h-1 rounded-full bg-black/20"></span>
+                  <span className="font-system text-lg tracking-[-0.02em]">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* 3. Processes & Experiments */}
@@ -364,18 +367,18 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           </div>
 
           {/* 4. Notes / Short Essays */}
-          <div className="mb-40 reveal">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Notes / Short Essays</h3>
+          <div className="mb-40 reveal px-4">
+            <h3 className="font-system text-[10px] tracking-[0.3em] mb-10 opacity-40">Notes / Short Essays</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-              <div>
-                <h4 className="font-display-bold text-2xl uppercase tracking-tighter mb-6">The Biomorphic Shift</h4>
-                <p className="font-display-serif italic text-xl text-black/60 leading-relaxed">
+              <div className="border-t border-black/5 pt-8">
+                <h4 className="font-system text-lg tracking-tight mb-6 opacity-90">The Biomorphic Shift</h4>
+                <p className="font-body text-xl text-black/60 leading-relaxed uppercase-none">
                   The transition from rigid digital structures to organic, breathing forms marks a shift in how we perceive virtual presence. Distortion becomes a language of life, signaling the presence of an embodied consciousness within the machine.
                 </p>
               </div>
-              <div>
-                <h4 className="font-display-bold text-2xl uppercase tracking-tighter mb-6">Mediated Touch</h4>
-                <p className="font-display-serif italic text-xl text-black/60 leading-relaxed">
+              <div className="border-t border-black/5 pt-8">
+                <h4 className="font-system text-lg tracking-tight mb-6 opacity-90">Mediated Touch</h4>
+                <p className="font-body text-xl text-black/60 leading-relaxed uppercase-none">
                   When touch is translated through a screen, it loses its physical weight but gains a new, synthetic intensity. We are mapping this new landscape of intimacy, where the interface acts as a second skin, sensitive and reactive.
                 </p>
               </div>
@@ -429,21 +432,21 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       {/* CONTACT SECTION */}
       <section id="contact" className="min-h-screen flex items-center justify-center px-10">
         <div className="reveal w-full max-w-screen-xl text-center">
-          <div className="metadata-label mb-10">Termination / Link</div>
-          <h2 className="font-display-bold text-[10vw] md:text-[14vw] uppercase tracking-tighter-massive leading-[0.8] mb-24">
+          <div className="font-system text-[9px] opacity-40 tracking-widest mb-10 text-black">Termination / Link</div>
+          <h2 className="font-system text-[10vw] md:text-[14vw] tracking-tighter-massive leading-[0.8] mb-24 opacity-90">
             Connect<br />Future
           </h2>
-          <GlassCard variant="hero" dark className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
-            <a href="mailto:studio@brunorealities.art" className="group font-display-bold text-2xl md:text-4xl uppercase tracking-tighter pb-2 border-b border-black/10 hover:border-black transition-all">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+            <a href="mailto:studio@brunorealities.art" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               Email <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="#" className="group font-display-bold text-2xl md:text-4xl uppercase tracking-tighter pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="#" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               Instagram <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="#" className="group font-display-bold text-2xl md:text-4xl uppercase tracking-tighter pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="#" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               LinkedIn <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-          </GlassCard>
+          </div>
         </div>
       </section>
 
