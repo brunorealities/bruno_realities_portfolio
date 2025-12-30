@@ -217,7 +217,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <section id="hero" className="min-h-screen flex flex-col justify-center px-10 relative overflow-hidden">
         <div className="reveal flex flex-col items-center justify-center text-center">
           <div className="absolute top-10 left-10 text-left">
-            <h1 className="font-system text-xl md:text-2xl tracking-[0.2em] opacity-90">Bruno Realities</h1>
+            <h1 className="font-system text-xl md:text-2xl tracking-[0.2em] opacity-90"></h1>
             <span className="font-system text-[9px] opacity-40 block mt-1 leading-none">Digital Corporeality Archive</span>
           </div>
 
@@ -232,27 +232,29 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
         </div>
 
-        {/* Morphing Dynamic Statement - Moved outside .reveal to bypass transform-parent constraints */}
-        <MorphingText />
+        {/* Morphing Dynamic Statement - Fades out as we leave Home */}
+        <div style={{ opacity: Math.max(0, 1 - scrollProgress * 8), transition: 'opacity 0.5s ease-out' }}>
+          <MorphingText />
+        </div>
       </section>
 
       {/* ABOUT SECTION (Artist Statement) */}
-      {/* ABOUT SECTION (Artist Statement) - Cinematic Full-screen Portrait */}
+      {/* ABOUT SECTION (Artist Statement) - Focus & Reference Typography */}
       <section id="about" className="relative min-h-screen w-full overflow-hidden bg-black group/about">
 
-        {/* Full-screen Background Image with Hover Interaction */}
-        <div className="absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale opacity-30 group-hover/about:grayscale-0 group-hover/about:opacity-100 scale-105 group-hover/about:scale-100">
+        {/* Full-screen Background Image with Focus Interaction */}
+        <div className="absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100">
           <img
             src="images/FOTO2.png"
             alt="Artist Portrait"
             className="w-full h-full object-cover"
           />
           {/* Subtle gradient overlay to ensure text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 xl:from-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
         </div>
 
         {/* Overlaid UI Elements and Text */}
-        <div className="relative z-10 h-full min-h-screen flex flex-col justify-between p-10 md:p-20 pointer-events-none">
+        <div className="relative z-10 h-full min-h-screen flex flex-col justify-between p-10 md:p-20 pt-32 md:pt-40 pointer-events-none">
 
           {/* Top: Systemic Label */}
           <div className="reveal flex justify-start">
@@ -262,14 +264,11 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </div>
           </div>
 
-          {/* Bottom-Right: Elegant Minimalist Statement */}
+          {/* Bottom-Right: Statement following reference typography */}
           <div className="reveal flex justify-end items-end">
-            <div className="max-w-xl text-right pointer-events-auto">
-              <p className="font-body text-xl md:text-2xl text-white/90 leading-relaxed mb-8">
+            <div className="max-w-4xl text-right pointer-events-auto">
+              <p className="font-system text-[3.8vw] md:text-[2.8vw] text-white leading-[0.95] tracking-[-0.07em] mb-4">
                 I am a new media artist working at the intersection of body, technology, and intimacy. My practice investigates how human presence is transformed when mediated by digital systems, interfaces, and artificial intelligences.
-              </p>
-              <p className="font-body text-xl md:text-2xl text-white/90 leading-relaxed">
-                Through installations and biomorphic distortion, I explore the idea of artificial intimacy and digital corporeality. Distortion operates as a central language — a symptom of the tension between human sensibility and computational logic.
               </p>
 
               <div className="mt-12 flex justify-end items-center gap-6 opacity-30">
@@ -279,14 +278,6 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </div>
           </div>
 
-        </div>
-      </section>
-
-      <section className="min-h-[60vh] flex flex-col items-center justify-center px-10">
-        <div className="max-w-5xl reveal text-center">
-          <p className="font-body text-3xl md:text-5xl leading-[1.3] text-black/80 max-w-4xl mx-auto">
-            We push the limits of <span className="font-system text-[0.6em] align-middle px-4 opacity-50 tracking-widest text-black">innovation</span> to craft immersive experiences that <span className="underline underline-offset-8 decoration-black/10">captivate</span> and engage.
-          </p>
         </div>
       </section>
 
@@ -366,84 +357,24 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </div>
           </div>
 
-          {/* 4. Notes / Short Essays */}
-          <div className="mb-40 reveal px-4">
-            <h3 className="font-system text-[10px] tracking-[0.3em] mb-10 opacity-40">Notes / Short Essays</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-              <div className="border-t border-black/5 pt-8">
-                <h4 className="font-system text-lg tracking-tight mb-6 opacity-90">The Biomorphic Shift</h4>
-                <p className="font-body text-xl text-black/60 leading-relaxed uppercase-none">
-                  The transition from rigid digital structures to organic, breathing forms marks a shift in how we perceive virtual presence. Distortion becomes a language of life, signaling the presence of an embodied consciousness within the machine.
-                </p>
-              </div>
-              <div className="border-t border-black/5 pt-8">
-                <h4 className="font-system text-lg tracking-tight mb-6 opacity-90">Mediated Touch</h4>
-                <p className="font-body text-xl text-black/60 leading-relaxed uppercase-none">
-                  When touch is translated through a screen, it loses its physical weight but gains a new, synthetic intensity. We are mapping this new landscape of intimacy, where the interface acts as a second skin, sensitive and reactive.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 5. Lexicon */}
-          <div className="mb-40 reveal">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Lexicon</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12">
-              {[
-                { term: "Digital Corporeality", def: "The state of having a body that exists primarily through digital signals and interfaces." },
-                { term: "Synthetic Desire", def: "Emotional intent that is shaped and amplified by artificial systems." },
-                { term: "Biomorphic Distortion", def: "The intentional deformation of digital forms to mimic biological processes like breathing or pulsing." },
-                { term: "Haptic Resonance", def: "The lingering sensation of physical touch within a virtual interaction." }
-              ].map((item, i) => (
-                <div key={i} className="border-l border-black/10 pl-8">
-                  <h5 className="font-display-bold text-lg uppercase tracking-tighter mb-2">{item.term}</h5>
-                  <p className="font-display-serif italic text-black/50">{item.def}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 6. Situated References */}
-          <div className="reveal">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Situated References</h3>
-            <div className="flex flex-wrap gap-x-12 gap-y-4">
-              {[
-                "Post-Human Aesthetics",
-                "Cybernetic Intimacy",
-                "Biomorphic Design Systems",
-                "Mediated Affect Theory",
-                "Digital Phenomenology"
-              ].map((ref, i) => (
-                <span key={i} className="font-display-bold text-sm uppercase tracking-widest opacity-30 hover:opacity-100 transition-opacity cursor-default">
-                  {ref}
-                </span>
-              ))}
-            </div>
-          </div>
-
         </div>
-
-        {/* Background Typography restored */}
-        <h3 className="font-display-bold text-[14vw] leading-[0.8] uppercase tracking-tighter-massive opacity-5 absolute top-1/2 left-0 -translate-y-1/2 pointer-events-none select-none">
-          Fragmented Presence
-        </h3>
       </section>
 
       {/* CONTACT SECTION */}
       <section id="contact" className="min-h-screen flex items-center justify-center px-10">
         <div className="reveal w-full max-w-screen-xl text-center">
           <div className="font-system text-[9px] opacity-40 tracking-widest mb-10 text-black">Termination / Link</div>
-          <h2 className="font-system text-[10vw] md:text-[14vw] tracking-tighter-massive leading-[0.8] mb-24 opacity-90">
+          {/* <h2 className="font-system text-[10vw] md:text-[14vw] tracking-tighter-massive leading-[0.8] mb-24 opacity-90">
             Connect<br />Future
-          </h2>
+          </h2> */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
             <a href="mailto:studio@brunorealities.art" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               Email <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="#" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="https://www.instagram.com/bruno.realities/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               Instagram <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="#" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="https://www.linkedin.com/in/bruno-macedo-776a52331/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
               LinkedIn <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
           </div>
@@ -451,7 +382,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       </section>
 
       <div className="h-[20vh]" />
-    </main>
+    </main >
   );
 };
 
