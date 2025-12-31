@@ -1,21 +1,20 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { useFrame, extend, ThreeElement, useThree } from '@react-three/fiber';
+import { useFrame, extend, useThree } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const WavesMaterial = shaderMaterial(
   {
-    uTime: 0,
+    uLargeTime: 0,
+    uSmallTime: 0,
     uMouse: new THREE.Vector2(0, 0),
     uColor: new THREE.Color('#c4a484'),
     uEmissiveColor: new THREE.Color('#ffffff'),
     uLargeWavesFrequency: new THREE.Vector2(3.2, 6.02),
-    uLargeWavesSpeed: 0.55,
     uLargeWavesMultiplier: 0.09,
     uSmallWavesIterations: 3,
     uSmallWavesFrequency: 4.1,
-    uSmallWavesSpeed: 0.07,
     uSmallWavesMultiplier: 0.08,
     uEmissivePower: 5.0,
     uEmissiveLow: -0.353,
@@ -31,20 +30,20 @@ const WavesMaterial = shaderMaterial(
   varying vec3 vPosition;
   varying vec3 vNormal;
   varying float vElevation;
-  uniform float uTime;
+  uniform float uLargeTime;
+  uniform float uSmallTime;
   uniform vec2 uMouse;
   
   uniform vec2 uLargeWavesFrequency;
-  uniform float uLargeWavesSpeed;
   uniform float uLargeWavesMultiplier;
   uniform float uSmallWavesFrequency;
-  uniform float uSmallWavesSpeed;
   uniform float uSmallWavesMultiplier;
   uniform float uNormalComputeShift;
   uniform float uMouseFreqInfluence;
   uniform float uMouseRadius;
   uniform float uMouseDepth;
 
+  // ... (noise functions same as before)
   vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
   vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
   float snoise(vec3 v){ 
@@ -94,8 +93,8 @@ const WavesMaterial = shaderMaterial(
     float mouseDist = distance(pos.xy, uMouse);
     float freqMod = 1.0 + smoothstep(8.0, 0.0, mouseDist) * uMouseFreqInfluence;
 
-    float elevation = sin(pos.x * uLargeWavesFrequency.x * freqMod + uTime * uLargeWavesSpeed) *
-                      sin(pos.y * uLargeWavesFrequency.y * freqMod + uTime * uLargeWavesSpeed) *
+    float elevation = sin(pos.x * uLargeWavesFrequency.x * freqMod + uLargeTime) *
+                      sin(pos.y * uLargeWavesFrequency.y * freqMod + uLargeTime) *
                       uLargeWavesMultiplier;
 
     float ridged = 0.0;
@@ -103,7 +102,7 @@ const WavesMaterial = shaderMaterial(
 
     for(int i = 1; i <= 3; i++) {
       float fi = float(i);
-      vec3 noiseInput = vec3(pos.xy * uSmallWavesFrequency * fi * freqMod, uTime * uSmallWavesSpeed);
+      vec3 noiseInput = vec3(pos.xy * uSmallWavesFrequency * fi * freqMod, uSmallTime);
       float n = snoise(noiseInput) * 0.5 + 0.5;
       float r = 1.0 - abs(2.0 * n - 1.0);
       r = r * r;
@@ -189,14 +188,18 @@ extend({ WavesMaterial });
 
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    wavesMaterial: ThreeElement<typeof WavesMaterial>;
+    wavesMaterial: any;
   }
 }
 
-const BackgroundWaves = () => {
+const BackgroundWaves: React.FC<{ progress: number }> = ({ progress }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const mousePos = useRef(new THREE.Vector2(0, 0));
   const { viewport } = useThree();
+
+  // Phase accumulators to prevent glitches when speed changes
+  const largeTimeRef = useRef(0);
+  const smallTimeRef = useRef(0);
 
   // GUI Controls for Wave Background
   const controls = useControls('Wave Background', {
@@ -231,14 +234,26 @@ const BackgroundWaves = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (!meshRef.current) return;
-    const { clock } = state;
     const material = meshRef.current.material as any;
 
-    material.uTime = clock.getElapsedTime();
+    // --- Wave Parameter Logic ---
+    // We keep the phase accumulation for stability, but remove the dynamic darkening
+    // to keep the background consistent across all sections as requested.
 
-    // Scale mouse to viewport geometry size (width * 1.5, height * 1.5)
+    // Update Material Uniforms directly from controls (or lerp for smoothness)
+    material.uEmissivePower = THREE.MathUtils.lerp(material.uEmissivePower, controls.emissivePower, 0.1);
+    material.uColor.lerp(new THREE.Color(controls.color), 0.1);
+
+    // ACUMULATE PHASE (Maintenance of the scroll stability fix)
+    largeTimeRef.current += delta * controls.largeSpeed;
+    smallTimeRef.current += delta * controls.smallSpeed;
+
+    material.uLargeTime = largeTimeRef.current;
+    material.uSmallTime = smallTimeRef.current;
+
+    // Scale mouse to viewport geometry size
     const targetX = mousePos.current.x * (viewport.width * 1.5 / 2);
     const targetY = mousePos.current.y * (viewport.height * 1.5 / 2);
 
@@ -255,10 +270,10 @@ const BackgroundWaves = () => {
         uColor={new THREE.Color(controls.color)}
         uEmissiveColor={new THREE.Color(controls.emissiveColor)}
         uLargeWavesFrequency={new THREE.Vector2(controls.largeWaves.x, controls.largeWaves.y)}
-        uLargeWavesSpeed={controls.largeSpeed}
+        uLargeTime={0}
         uLargeWavesMultiplier={controls.largeMultiplier}
         uSmallWavesFrequency={controls.smallFreq}
-        uSmallWavesSpeed={controls.smallSpeed}
+        uSmallTime={0}
         uSmallWavesMultiplier={controls.smallMultiplier}
         uEmissivePower={controls.emissivePower}
         uEmissiveLow={controls.emissiveLow}

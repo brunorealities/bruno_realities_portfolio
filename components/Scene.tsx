@@ -194,7 +194,7 @@ const Scene: React.FC<{ progress: number }> = ({ progress }) => (
   <div className="w-full h-full fixed inset-0 pointer-events-none">
     <Canvas dpr={[1, 2]}>
       <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={35} />
-      <BackgroundWaves />
+      <BackgroundWaves progress={progress} />
       <SceneContent progress={progress} />
       <Effects />
       <Environment preset="studio" />

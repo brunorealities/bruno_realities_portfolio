@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import HorizontalCarousel, { Work } from './HorizontalCarousel';
+import OrbitalInterface from './OrbitalInterface';
+import { Work } from './HorizontalCarousel';
 import WorkModal from './WorkModal';
 import GlassCard from './GlassCard';
 
@@ -57,122 +58,74 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
   const works: Work[] = [
     {
-      title: "Escapismo",
-      desc: "Synthetic escape through digital membranes.",
-      longDesc: "Escapismo explores the desire to dissolve the physical body into digital space. Through a series of generative membranes, the work investigates the tension between the weight of biological existence and the perceived weightlessness of virtual presence.\n\nThe piece functions as a haptic mirror, reflecting the viewer's movements as fluid distortions in a synthetic skin.",
-      image: "images/eros.png",
-      year: "2025",
-      tags: ["Interactive Installation", "Digital Sculpture"],
-      medium: "Hybrid",
-      context: "Exhibition"
-    },
-    {
-      title: "Absentia",
-      desc: "The presence of absence in virtual spaces.",
-      longDesc: "Absentia is a study on the emotional residue left behind in digital environments. It focuses on the 'ghost' signals of human interaction—the traces of touch and intent that remain after a connection is severed.\n\nBy mapping these invisible patterns, the work creates a space for reflecting on the fragility of artificial intimacy.",
-      image: "images/eros.png",
-      year: "2024",
-      tags: ["Video Art", "Generative Video"],
-      medium: "Digital",
-      context: "Online"
-    },
-    {
-      title: "Assimétricos",
-      desc: "Asymmetrical beauty in digital corporeality.",
-      longDesc: "This project challenges the perfect symmetry often associated with digital avatars. By introducing intentional flaws and biomorphic irregularities, Assimétricos seeks a more 'human' form of digital representation.\n\nIt is an exploration of the uncanny valley, where distortion becomes a signifier of life and vulnerability.",
-      image: "images/eros.png",
-      year: "2025",
-      tags: ["Digital Sculpture", "Fine Art"],
-      medium: "Digital",
-      context: "Ongoing"
-    },
-    {
-      title: "Cotidiano",
+      title: "Cheiro No Cangote",
       desc: "Everyday digital intimacy and synthetic touch.",
       longDesc: "Cotidiano captures the mundane moments of interaction with digital interfaces. It highlights the subtle textures of synthetic touch and the quiet intimacy found in our daily digital rituals.",
-      image: "images/eros.png",
+      image: "dist/images/capa_cheiro.jpeg",
       year: "2024",
-      tags: ["Illustration", "Digital Sculpture"],
+      tags: ["Spatial"],
       medium: "Digital",
       context: "Ongoing"
     },
+
     {
       title: "Antropomórficos",
       desc: "Efeitos colaterais de sentir como humano.",
       longDesc: "Antropomórficos is an ongoing investigation into the physicalization of emotional data. The work translates complex human feelings—longing, desire, anxiety—into tactile, biomorphic forms that pulse and breathe.\n\nIt asks: what are the side effects of feeling like a human in a world of machines?",
       image: "images/eros.png",
       year: "2025",
-      tags: ["Interactive Installation", "XR / Immersive Experience"],
+      tags: ["Illustration"],
       medium: "Hybrid",
       context: "Commissioned"
     },
     {
-      title: "Gestual Intimacy",
-      desc: "Textured gestures in a digital landscape.",
+      title: "Melting Intimacy",
+      desc: "Videoart about the degrading intimacy stage",
       longDesc: "This work focuses on the translation of physical gestures into digital textures. It explores how the nuance of human movement can be preserved and amplified through generative processes.",
-      image: "images/eros.png",
+      image: "dist/images/meltingintimacy.png",
       year: "2025",
-      tags: ["Performance", "Generative Video"],
+      tags: ["VideoArt"],
       medium: "Hybrid",
       context: "Performance"
     },
     {
-      title: "Não Correspondido",
+      title: "Speculatives Intimacies",
       desc: "Unrequited signals in a fragmented presence.",
       longDesc: "Não Correspondido deals with the failure of communication in digital spaces. It visualizes the 'lost packets' of emotional intent, creating a landscape of fragmented signals and unfulfilled desires.",
-      image: "images/eros.png",
+      image: "dist/images/speculativeintimacy.png",
       year: "2024",
-      tags: ["Video Art", "Fine Art"],
+      tags: ["Illustration"],
       medium: "Digital",
       context: "Online"
     },
     {
-      title: "No Canto",
-      desc: "Isolated moments of digital reflection.",
+      title: "Corpo Sem Orgãos",
+      desc: "Resin Sculpture of 3D printed human body without organs",
       longDesc: "A study on solitude within the hyper-connected digital realm. No Canto creates a quiet, peripheral space for contemplation and self-observation.",
-      image: "images/eros.png",
+      image: "dist/images/corposemorgãos.jpeg",
       year: "2025",
-      tags: ["Digital Sculpture", "Wearable / Object"],
+      tags: ["Sculpture"],
       medium: "Hybrid",
       context: "Exhibition"
     },
+
     {
-      title: "Offering",
-      desc: "A digital offering of synthetic emotion.",
-      longDesc: "Offering is a symbolic gesture of vulnerability in the digital age. It presents a synthetic heart, pulsing with data-driven emotions, as a gift to the network.",
-      image: "images/eros.png",
-      year: "2023",
-      tags: ["Fine Art", "Digital Sculpture"],
-      medium: "Digital",
-      context: "Commissioned"
-    },
-    {
-      title: "Orgasm Enhancer",
-      desc: "Flesh and skin rendered through digital interfaces.",
-      longDesc: "This provocative piece explores the intersection of technology and human sexuality. It investigates how digital tools can amplify and distort our most intimate physical experiences.",
-      image: "images/eros.png",
-      year: "2025",
-      tags: ["Wearable / Object", "Interactive Installation"],
-      medium: "Hybrid",
-      context: "Exhibition"
-    },
-    {
-      title: "Smiley Render",
-      desc: "Fragmented joy in a synthetic world.",
+      title: "Interdito",
+      desc: "Fine art of a forbidden gesture",
       longDesc: "Smiley Render deconstructs the most basic symbol of happiness. It reveals the complex, often distorted layers of data that lie beneath the surface of digital positivity.",
-      image: "images/eros.png",
+      image: "dist/images/interdito.jpeg",
       year: "2024",
-      tags: ["Illustration", "Generative Video"],
+      tags: ["Illustration"],
       medium: "Digital",
       context: "Ongoing"
     },
     {
-      title: "Underwater",
-      desc: "Volumetric rendering of digital presence.",
+      title: "Assimétricos",
+      desc: "Translucent Artificial Intimacy Sculpture",
       longDesc: "Underwater immerses the viewer in a dense, fluid digital environment. It explores the sensation of being submerged in data, where presence is felt through pressure and light rather than solid form.",
-      image: "images/eros.png",
+      image: "dist/images/capa_assimetricos.jpeg",
       year: "2025",
-      tags: ["XR / Immersive Experience", "AR / WebAR"],
+      tags: ["Sculpture"],
       medium: "Digital",
       context: "Exhibition"
     }
@@ -297,10 +250,8 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           </div>
         </div>
 
-        <div className="divider-dark opacity-50 mb-20" />
-
-        <div className="reveal">
-          <HorizontalCarousel
+        <div className="reveal relative z-10">
+          <OrbitalInterface
             works={works}
             onWorkClick={(work) => setActiveWork(work)}
           />

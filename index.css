@@ -6,6 +6,24 @@
   }
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.bg-radial-gradient-vignette {
+  background: radial-gradient(circle at 50% 50%, transparent 20%, black 100%);
+}
+
 /* Global styles */
 :root {
   --cloud-dancer: #F2F0ED;
