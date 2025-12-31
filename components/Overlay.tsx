@@ -242,15 +242,8 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <div className="divider-dark" />
 
       {/* WORKS SECTION */}
-      <section id="works" className="min-h-screen py-40 border-t border-black/5">
-        <div className="px-10 mb-20 reveal">
-          <div className="flex gap-8 items-baseline">
-            <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Selected Works</h2>
-            <span className="font-system text-[9px] opacity-40">new media works</span>
-          </div>
-        </div>
-
-        <div className="reveal relative z-10">
+      <section id="works" className="min-h-screen border-t border-black/5">
+        <div className="relative z-10">
           <OrbitalInterface
             works={works}
             onWorkClick={(work) => setActiveWork(work)}

@@ -118,9 +118,17 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
     return (
         <div
-            className="relative w-full h-[85vh] flex items-center justify-center overflow-hidden bg-transparent"
+            className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden bg-transparent pt-20"
             onMouseLeave={handleMouseLeaveGlobal}
+            onClick={handleMouseLeaveGlobal}
         >
+            {/* 0. Section Header (Unified) */}
+            <div className="absolute top-12 left-12 z-50 pointer-events-none">
+                <div className="flex gap-6 items-baseline">
+                    <h2 className="font-system text-[5vw] md:text-[3.5vw] tracking-tighter-massive leading-none opacity-90 text-black uppercase">Selected Works</h2>
+                    <span className="font-system text-[9px] opacity-40 text-black uppercase tracking-widest px-3 py-1 border border-black/10 rounded-full">Archive // 01</span>
+                </div>
+            </div>
 
             {/* 0. Background Watermark */}
             <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center pointer-events-none select-none">
@@ -167,7 +175,13 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
             {/* 3. Central Lens */}
             <div
-                className="relative z-20 w-72 h-72 md:w-96 md:h-96 rounded-full border border-white/5 overflow-hidden bg-black/60 backdrop-blur-md shadow-[0_0_120px_rgba(0,0,0,0.8)] transition-all duration-700 ease-out"
+                className={`relative z-20 w-72 h-72 md:w-96 md:h-96 rounded-full border border-white/5 overflow-hidden bg-black/60 backdrop-blur-md shadow-[0_0_120px_rgba(0,0,0,0.8)] transition-all duration-700 ease-out ${activeWork ? 'cursor-pointer' : ''}`}
+                onClick={(e) => {
+                    if (activeWork) {
+                        e.stopPropagation();
+                        onWorkClick(activeWork);
+                    }
+                }}
             >
                 <div className="absolute inset-0 transition-opacity duration-500 overflow-hidden">
                     <img
@@ -189,6 +203,12 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                     <div className="w-12 h-[1px] bg-white/10 animate-pulse" />
                     <span className="font-system text-[8px] tracking-[0.5em] text-white/20 uppercase">Network Active</span>
                 </div>
+
+                {activeWork && (
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center animate-fade-in pointer-events-none">
+                        <span className="font-system text-[7px] tracking-[0.3em] text-white/40 uppercase">Tap to Enter</span>
+                    </div>
+                )}
             </div>
 
             {/* 4. Clustered Mapping Dots */}
@@ -208,7 +228,15 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                                 transition: 'left 1s cubic-bezier(0.2, 0, 0.2, 1), top 1s cubic-bezier(0.2, 0, 0.2, 1)'
                             }}
                             onMouseEnter={() => handleHover(idx)}
-                            onClick={() => onWorkClick(work)}
+                            onMouseLeave={handleMouseLeaveGlobal}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (activeIndex === idx) {
+                                    onWorkClick(work);
+                                } else {
+                                    handleHover(idx);
+                                }
+                            }}
                         >
                             <div className="relative flex items-center justify-center">
                                 <div className={`absolute w-5 h-5 rounded-full border border-white/40 transition-all duration-[0.6s] ease-in-out ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.5]'
