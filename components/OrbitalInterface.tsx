@@ -25,12 +25,14 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const revealTween = useRef<gsap.core.Tween | null>(null);
+    const lastSelectTimeRef = useRef<number>(0);
 
     const handleHover = (idx: number) => {
         if (activeIndex === idx) return;
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
         setActiveIndex(idx);
+        lastSelectTimeRef.current = Date.now();
 
         timeoutRef.current = setTimeout(() => {
             setDisplayIndex(idx);
@@ -179,7 +181,10 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                 onClick={(e) => {
                     if (activeWork) {
                         e.stopPropagation();
-                        onWorkClick(activeWork);
+                        // Prevent immediate opening on mobile/simulated hover
+                        if (Date.now() - lastSelectTimeRef.current > 300) {
+                            onWorkClick(activeWork);
+                        }
                     }
                 }}
             >
@@ -231,8 +236,12 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                             onMouseLeave={handleMouseLeaveGlobal}
                             onClick={(e) => {
                                 e.stopPropagation();
+                                const now = Date.now();
                                 if (activeIndex === idx) {
-                                    onWorkClick(work);
+                                    // Only open if the selection is "mature"
+                                    if (now - lastSelectTimeRef.current > 300) {
+                                        onWorkClick(work);
+                                    }
                                 } else {
                                     handleHover(idx);
                                 }
