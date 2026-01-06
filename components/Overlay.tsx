@@ -202,7 +202,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           <div className="reveal flex justify-end items-end">
             <div className="max-w-4xl text-right pointer-events-auto">
               <p className="font-system text-[3.8vw] md:text-[2.8vw] text-white leading-[0.95] tracking-[-0.07em] mb-4 uppercase">
-                NEW MEDIA ARTIST INVESTIGATING THE SUBSTITUTION OF THE FLESH AS AN INTIMATE TERRITORY BY DIGITAL SIMULACRUMS, DISTORTING THE HUMAN BODY TO EXPOSE THE SENSORY VOID OF ARTIFICIAL HYPER-INTIMACIES.
+                New media artist investigating the boundaries between visceral flesh and digital simulacrums. Through 3D modeling, glitch art, and immersive installations, the artist distorts post-anatomical figures to confront sterile virtuality with physical friction, denouncing the artificialization of intimate territories.
               </p>
               <div className="mt-12 flex justify-end items-center gap-6 opacity-30">
                 <span className="font-system text-[9px] text-white tracking-[0.4em]">status.presence // active</span>
