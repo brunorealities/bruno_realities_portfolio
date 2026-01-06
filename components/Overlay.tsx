@@ -5,7 +5,7 @@ import OrbitalInterface from './OrbitalInterface';
 import { Work } from './HorizontalCarousel';
 import WorkModal from './WorkModal';
 import GlassCard from './GlassCard';
-
+import ResearchField, { ResearchItem } from './ResearchField';
 import MorphingText from './MorphingText';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,11 +24,13 @@ interface OverlayProps {
   onProjectClick: (project: Project) => void;
   scrollProgress: number;
   distortion: number;
+  onResearchFocus?: (focus: { texture: any; progress: number; center?: any } | null) => void;
 }
 
-const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, distortion }) => {
+const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, distortion, onResearchFocus }) => {
   const [activeWork, setActiveWork] = useState<Work | null>(null);
   const [isAboutRevealed, setIsAboutRevealed] = useState(false);
+  const [activeResearch, setActiveResearch] = useState<ResearchItem | null>(null);
 
   useEffect(() => {
     const sections = document.querySelectorAll('.reveal');
@@ -39,13 +41,11 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         trigger: section,
         start: "top 85%",
         onEnter: () => section.classList.add('active'),
-        // Re-add active if scrolling back up and down
         onEnterBack: () => section.classList.add('active'),
       });
       triggers.push(st);
     });
 
-    // Refresh ScrollTrigger after a short delay to ensure layout is stable
     const timer = setTimeout(() => {
       ScrollTrigger.refresh();
     }, 100);
@@ -67,11 +67,10 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       medium: "Digital",
       context: "Ongoing"
     },
-
     {
       title: "Antropomórficos",
       desc: "Efeitos colaterais de sentir como humano.",
-      longDesc: "Antropomórficos is an ongoing investigation into the physicalization of emotional data. The work translates complex human feelings—longing, desire, anxiety—into tactile, biomorphic forms that pulse and breathe.\n\nIt asks: what are the side effects of feeling like a human in a world of machines?",
+      longDesc: "Antropomórficos is an ongoing investigation into the physicalization of emotional data. The work translates complex human feelings—longing, desire, anxiety—into tactile, biomorphic forms that pulse and breathe.",
       image: "images/images/eros.png",
       year: "2025",
       tags: ["Illustration"],
@@ -108,7 +107,6 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       medium: "Hybrid",
       context: "Exhibition"
     },
-
     {
       title: "Interdito",
       desc: "Fine art of a forbidden gesture",
@@ -129,12 +127,6 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       medium: "Digital",
       context: "Exhibition"
     }
-  ];
-
-  const researchImages = [
-    "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=500&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=500&auto=format&fit=crop"
   ];
 
   const handleCloseModal = () => setActiveWork(null);
@@ -183,37 +175,23 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
               </p>
             </GlassCard>
           </div>
-
         </div>
 
-        {/* Morphing Dynamic Statement - Fades out as we leave Home */}
         <div style={{ opacity: Math.max(0, 1 - scrollProgress * 8), transition: 'opacity 0.5s ease-out' }}>
           <MorphingText />
         </div>
       </section>
 
-      {/* Structural Divider */}
       <div className="divider-dark" />
 
-      {/* ABOUT SECTION (Artist Statement) */}
-      {/* ABOUT SECTION (Artist Statement) - Focus & Reference Typography */}
+      {/* ABOUT SECTION */}
       <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
-
-        {/* Full-screen Background Image with Focus Interaction */}
         <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none scale-100 opacity-100' : ''}`}>
-          <img
-            src="images/FOTO2.png"
-            alt="Artist Portrait"
-            className="w-full h-full object-cover"
-          />
-          {/* Subtle gradient overlay to ensure text readability */}
+          <img src="images/FOTO2.png" alt="Artist Portrait" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
         </div>
 
-        {/* Overlaid UI Elements and Text */}
         <div className="relative z-10 h-full min-h-screen flex flex-col justify-between p-10 md:p-20 pt-32 md:pt-40 pointer-events-none">
-
-          {/* Top: Systemic Label */}
           <div className="reveal flex justify-start">
             <div className="border-t border-white/20 pt-4">
               <span className="font-system text-[9px] text-white opacity-40 block mb-1">Ref. AI-00 // Archive</span>
@@ -221,24 +199,20 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </div>
           </div>
 
-          {/* Bottom-Right: Statement following reference typography */}
           <div className="reveal flex justify-end items-end">
             <div className="max-w-4xl text-right pointer-events-auto">
-              <p className="font-system text-[3.8vw] md:text-[2.8vw] text-white leading-[0.95] tracking-[-0.07em] mb-4">
-                I am a new media artist working at the intersection of body, technology, and intimacy. My practice investigates how human presence is transformed when mediated by digital systems, interfaces, and artificial intelligences.
+              <p className="font-system text-[3.8vw] md:text-[2.8vw] text-white leading-[0.95] tracking-[-0.07em] mb-4 uppercase">
+                NEW MEDIA ARTIST INVESTIGATING THE SUBSTITUTION OF THE FLESH AS AN INTIMATE TERRITORY BY DIGITAL SIMULACRUMS, DISTORTING THE HUMAN BODY TO EXPOSE THE SENSORY VOID OF ARTIFICIAL HYPER-INTIMACIES.
               </p>
-
               <div className="mt-12 flex justify-end items-center gap-6 opacity-30">
                 <span className="font-system text-[9px] text-white tracking-[0.4em]">status.presence // active</span>
                 <div className="w-12 h-[1px] bg-white/40"></div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* Structural Divider */}
       <div className="divider-dark" />
 
       {/* WORKS SECTION */}
@@ -251,89 +225,74 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         </div>
       </section>
 
-      {/* Structural Divider */}
       <div className="divider-dark" />
 
-      {/* RESEARCH SECTION */}
-      <section id="research" className="min-h-screen py-40 px-10 bg-black/2 relative overflow-hidden">
+      {/* RESEARCH SECTION - Laboratory Archive Redesign */}
+      <section id="research" className="min-h-screen py-32 px-10 bg-white/5 backdrop-blur-[2px] text-black relative overflow-hidden">
         <div className="max-w-screen-xl mx-auto relative z-10">
-
-          {/* 1. Intro Text */}
-          <div className="mb-32 reveal">
-            <div className="flex gap-8 items-baseline mb-12 border-t border-black/10 pt-4">
-              <h2 className="font-system text-[6vw] tracking-tighter-massive leading-none opacity-90">Research</h2>
-              <span className="font-system text-[9px] opacity-40">Concept Study / 001</span>
+          <div className="mb-20 reveal border-t border-black/10 pt-8 flex flex-col md:flex-row justify-between items-start gap-12">
+            <div>
+              <h2 className="font-system text-[8vw] md:text-[6vw] tracking-tighter-massive leading-none opacity-90 mb-2 uppercase">Research</h2>
+              <span className="font-system text-[10px] tracking-[0.4em] opacity-40 uppercase">Laboratory Archive // Concept Study</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-l border-black/5 pl-10 ml-4">
-              <p className="font-body text-2xl text-black/70 leading-relaxed uppercase-none">
-                Our research explores the boundaries of artificial intimacy, investigating how digital interfaces can mediate and amplify human emotion. We look at the body not as a fixed biological entity, but as a fluid signal in a network of synthetic desires.
-              </p>
-              <p className="font-body text-2xl text-black/70 leading-relaxed uppercase-none">
-                Through embodied experimentation and biomorphic distortion, we seek to understand the symptoms of digital corporeality. Our focus is on the tactile translation of presence and the visceral impact of mediated touch.
-              </p>
+
+            <div className="max-w-xs">
+              <h3 className="font-system text-[10px] tracking-[0.3em] mb-6 opacity-30 uppercase">Lines of Investigation</h3>
+              <ul className="space-y-3 opacity-60">
+                {["Artificial Intimacy", "Body as Interface", "Distortion as Symptom", "Fragmented Presence"].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <span className="w-1 h-[1px] bg-black/30"></span>
+                    <span className="font-system text-xs tracking-widest uppercase">{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* 2. Lines of Investigation */}
-          <div className="mb-40 reveal px-4">
-            <h3 className="font-system text-[10px] tracking-[0.3em] mb-10 opacity-40">Lines of Investigation</h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-12 opacity-80">
-              {[
-                "Artificial Intimacy",
-                "Body as Interface",
-                "Distortion as Symptom",
-                "Mediated Desire",
-                "Fragmented Presence"
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-4 group">
-                  <span className="w-1 h-1 rounded-full bg-black/20"></span>
-                  <span className="font-system text-lg tracking-[-0.02em]">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="reveal relative min-h-[600px] w-full mb-12">
+            <ResearchField
+              onUpdateMetadata={setActiveResearch}
+              onFocusBackground={(texture, progress, center) => {
+                if (onResearchFocus) {
+                  onResearchFocus(texture ? { texture, progress, center } : null);
+                }
+              }}
+            />
 
-          {/* 3. Processes & Experiments */}
-          <div className="mb-40 reveal">
-            <h3 className="font-display-bold text-xs uppercase tracking-[0.3em] mb-10 opacity-40">Processes & Experiments</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {[
-                { img: "images/process/processo_human.jpeg", cap: "Experiment 001: Synthetic Skin Tension" },
-                { img: "images/process/processo_human.jpeg", cap: "Experiment 002: Haptic Memory Mapping" },
-                { img: "images/process/processo_human.jpeg", cap: "Experiment 003: Volumetric Presence" },
-                { img: "images/process/processo_human.jpeg", cap: "Experiment 004: Tactile Signal Research" }
-              ].map((exp, i) => (
-                <div key={i} className="group">
-                  <div className="aspect-[16/9] overflow-hidden bg-black/5 mb-6">
-                    <img src={exp.img} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000" />
-                  </div>
-                  <p className="font-mono text-[10px] uppercase tracking-widest opacity-50">{exp.cap}</p>
+            <div className={`absolute bottom-0 left-0 transition-opacity duration-500 pointer-events-none ${activeResearch ? 'opacity-100' : 'opacity-0'}`}>
+              <div className="border-l border-black/20 pl-6 py-2">
+                <span className="font-system text-[9px] opacity-30 tracking-[0.3em] uppercase block mb-1">Experiment.Ref // {activeResearch?.year}</span>
+                <h4 className="font-system text-xl tracking-tight uppercase">{activeResearch?.title}</h4>
+                <div className="mt-4 flex items-center gap-4 opacity-20">
+                  <span className="font-system text-[8px] uppercase tracking-widest">status: analyzed</span>
+                  <div className="w-8 h-[1px] bg-black"></div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
 
+            {!activeResearch && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-20 text-center">
+                <span className="font-system text-[10px] tracking-[0.5em] uppercase animate-pulse">explore archive</span>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Structural Divider */}
       <div className="divider-dark" />
 
       {/* CONTACT SECTION */}
       <section id="contact" className="min-h-screen flex items-center justify-center px-10">
         <div className="reveal w-full max-w-screen-xl text-center">
           <div className="font-system text-[9px] opacity-40 tracking-widest mb-10 text-black">Termination / Link</div>
-          {/* <h2 className="font-system text-[10vw] md:text-[14vw] tracking-tighter-massive leading-[0.8] mb-24 opacity-90">
-            Connect<br />Future
-          </h2> */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
-            <a href="mailto:studio@brunorealities.art" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="mailto:studio@brunorealities.art" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all text-black">
               Email <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="https://www.instagram.com/bruno.realities/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="https://www.instagram.com/bruno.realities/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all text-black">
               Instagram <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
-            <a href="https://www.linkedin.com/in/bruno-macedo-776a52331/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all">
+            <a href="https://www.linkedin.com/in/bruno-macedo-776a52331/" className="group font-system text-xl md:text-2xl tracking-tight pb-2 border-b border-black/10 hover:border-black transition-all text-black">
               LinkedIn <span className="inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
             </a>
           </div>
@@ -341,7 +300,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       </section>
 
       <div className="h-[20vh]" />
-    </main >
+    </main>
   );
 };
 

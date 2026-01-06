@@ -2,12 +2,23 @@ import React, { useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
 
 const phrases = [
-    "intimacy as interface",
-    "the body becomes image",
-    "fragmented presence",
-    "desire mediated by systems",
-    "contact without touch",
-    "the archive is alive"
+    "Carne",         // O corpo físico, visceral e resistente 
+    "Pele",
+    "Malha",       // O limite sensível que vira superfície de contato 
+    "Pulso",
+    "Suor",
+    "Latência",
+    "Loop",             // A vida orgânica que pulsa em atraso 
+    "Eros",          // A chama que move e costura o que foi partido 
+    "Toque",
+    "Simulacro",
+    "Virtual",
+    "Presença",        // A busca pela fricção que não acontece 
+    "Intimo",       // A performance de uma intimidade que não existe 
+    "Protocolo",       // Onde o desejo humano vira padrão estatístico 
+    "Interface",      // A expressão da subjetividade que vira signo O atraso entre ação e resposta que deforma o corpo 
+    "Pixel",         // A unidade que denuncia a mentira da aparência    // A repetição suave que zumbifica a experiência      // O corpo transformado em infraestrutura de relação 
+    "Atomo"          // O estado final da presença sem proximidade e afeto sem fricção 
 ];
 
 const MorphingText: React.FC = () => {
@@ -47,8 +58,8 @@ const MorphingText: React.FC = () => {
             <div
                 ref={textRef}
                 style={{
-                    fontSize: '16vw',
-                    lineHeight: '0.7',
+                    fontSize: '22vw',
+                    lineHeight: '1.2',
                     fontFamily: "'Inter', sans-serif", // Usando Inter para poder usar Bold alto
                     fontWeight: 900,
                     display: 'block',

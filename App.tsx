@@ -26,6 +26,7 @@ const App: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [researchFocus, setResearchFocus] = useState<{ texture: any; progress: number; center?: any } | null>(null);
 
   useEffect(() => {
     if (selectedProject) return;
@@ -72,7 +73,10 @@ const App: React.FC = () => {
       <CustomCursor />
       <Leva hidden={!DEBUG} collapsed />
       <div className={`canvas-container transition-opacity duration-[2.5s] ${selectedProject ? 'opacity-0' : 'opacity-100'}`}>
-        <Scene progress={selectedProject ? 0.45 : scrollProgress} />
+        <Scene
+          progress={selectedProject ? 0.45 : scrollProgress}
+          researchFocus={researchFocus}
+        />
       </div>
 
       <nav className={`fixed top-0 left-0 w-full px-10 py-10 z-50 flex justify-between items-start pointer-events-none transition-transform duration-[1.2s] ease-in-out ${selectedProject ? '-translate-y-full' : 'translate-y-0'}`}>
@@ -112,6 +116,7 @@ const App: React.FC = () => {
           onProjectClick={setSelectedProject}
           scrollProgress={scrollProgress}
           distortion={distortion}
+          onResearchFocus={setResearchFocus}
         />
       )}
     </div>

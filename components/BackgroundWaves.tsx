@@ -24,12 +24,19 @@ const WavesMaterial = shaderMaterial(
     uRoughness: 0.282,
     uMouseRadius: 2.5,
     uMouseDepth: 1.0,
+
+    // FOCUS REVEAL UNIFORMS
+    uFocusTexture: null,
+    uFocusProgress: 0.0,
+    uFocusCenter: new THREE.Vector2(0.5, 0.5),
+    uFocusRadius: 0.8,
   },
   // Vertex Shader
   `
   varying vec3 vPosition;
   varying vec3 vNormal;
   varying float vElevation;
+  varying vec2 vUv;
   uniform float uLargeTime;
   uniform float uSmallTime;
   uniform vec2 uMouse;
@@ -121,6 +128,7 @@ const WavesMaterial = shaderMaterial(
   }
 
   void main() {
+    vUv = uv;
     vec3 pos = position;
     float elevation = getElevation(pos);
     pos.z += elevation;
@@ -144,6 +152,7 @@ const WavesMaterial = shaderMaterial(
   `
   varying vec3 vNormal;
   varying float vElevation;
+  varying vec2 vUv;
 
   uniform vec3 uColor;
   uniform vec3 uEmissiveColor;
@@ -151,6 +160,11 @@ const WavesMaterial = shaderMaterial(
   uniform float uEmissiveLow;
   uniform float uEmissiveHigh;
   uniform float uRoughness;
+
+  uniform sampler2D uFocusTexture;
+  uniform float uFocusProgress;
+  uniform vec2 uFocusCenter;
+  uniform float uFocusRadius;
 
   float remap(float value, float low1, float high1, float low2, float high2) {
     return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
@@ -162,6 +176,16 @@ const WavesMaterial = shaderMaterial(
     emissiveFactor = pow(emissiveFactor, uEmissivePower);
 
     vec3 finalColor = mix(uColor, uEmissiveColor, emissiveFactor);
+
+    // Dynamic Image Reveal
+    if (uFocusProgress > 0.001) {
+      float dist = distance(vUv, uFocusCenter);
+      float mask = smoothstep(uFocusRadius, uFocusRadius - 0.4, dist);
+      vec4 texColor = texture2D(uFocusTexture, vUv);
+      // Blend texture with current color
+      // opacidade baixa/média para preservar a assinatura do site
+      finalColor = mix(finalColor, texColor.rgb, mask * uFocusProgress * 0.4);
+    }
 
     // Iluminação Specular para aspecto "viscoso/molhado"
     vec3 lightDirection = normalize(vec3(0.35, 0.35, 1.0));
@@ -192,7 +216,13 @@ declare module '@react-three/fiber' {
   }
 }
 
-const BackgroundWaves: React.FC<{ progress: number }> = ({ progress }) => {
+interface FocusState {
+  texture: THREE.Texture | null;
+  progress: number;
+  center?: THREE.Vector2;
+}
+
+const BackgroundWaves: React.FC<{ progress: number; focus?: FocusState }> = ({ progress, focus }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const mousePos = useRef(new THREE.Vector2(0, 0));
   const { viewport } = useThree();
@@ -239,19 +269,26 @@ const BackgroundWaves: React.FC<{ progress: number }> = ({ progress }) => {
     const material = meshRef.current.material as any;
 
     // --- Wave Parameter Logic ---
-    // We keep the phase accumulation for stability, but remove the dynamic darkening
-    // to keep the background consistent across all sections as requested.
-
-    // Update Material Uniforms directly from controls (or lerp for smoothness)
     material.uEmissivePower = THREE.MathUtils.lerp(material.uEmissivePower, controls.emissivePower, 0.1);
     material.uColor.lerp(new THREE.Color(controls.color), 0.1);
 
-    // ACUMULATE PHASE (Maintenance of the scroll stability fix)
+    // ACUMULATE PHASE
     largeTimeRef.current += delta * controls.largeSpeed;
     smallTimeRef.current += delta * controls.smallSpeed;
 
     material.uLargeTime = largeTimeRef.current;
     material.uSmallTime = smallTimeRef.current;
+
+    // Focus state updates
+    if (focus) {
+      material.uFocusTexture = focus.texture;
+      material.uFocusProgress = THREE.MathUtils.lerp(material.uFocusProgress, focus.progress, 0.05);
+      if (focus.center) {
+        material.uFocusCenter.lerp(focus.center, 0.1);
+      }
+    } else {
+      material.uFocusProgress = THREE.MathUtils.lerp(material.uFocusProgress, 0, 0.05);
+    }
 
     // Scale mouse to viewport geometry size
     const targetX = mousePos.current.x * (viewport.width * 1.5 / 2);

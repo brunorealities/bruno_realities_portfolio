@@ -67,9 +67,9 @@ const FlexibleModel = React.forwardRef(({ path, scale, position }: {
           map: textures.map,
           normalMap: textures.normalMap,
           roughnessMap: textures.roughnessMap,
-          metalness: 0.8,
-          roughness: 0.4,
-          envMapIntensity: 1.0,
+          metalness: 0.98,
+          roughness: 0.0,
+          envMapIntensity: 10.0,
           side: THREE.DoubleSide,
         });
 
@@ -190,11 +190,11 @@ const SceneContent = ({ progress }: { progress: number }) => {
   );
 };
 
-const Scene: React.FC<{ progress: number }> = ({ progress }) => (
+const Scene: React.FC<{ progress: number; researchFocus?: any }> = ({ progress, researchFocus }) => (
   <div className="w-full h-full fixed inset-0 pointer-events-none">
     <Canvas dpr={[1, 2]}>
       <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={35} />
-      <BackgroundWaves progress={progress} />
+      <BackgroundWaves progress={progress} focus={researchFocus} />
       <SceneContent progress={progress} />
       <Effects />
       <Environment preset="studio" />

@@ -1,60 +1,91 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
 
 const CustomCursor: React.FC = () => {
     const cursorRef = useRef<HTMLDivElement>(null);
+    const glowRef = useRef<HTMLDivElement>(null);
     const mousePos = useRef({ x: 0, y: 0 });
     const cursorPos = useRef({ x: 0, y: 0 });
     const [isTouch, setIsTouch] = useState(false);
-    const [proximity, setProximity] = useState(0); // 0 to 1
     const [isClickable, setIsClickable] = useState(false);
-    const [isPressed, setIsPressed] = useState(false);
+    const [heat, setHeat] = useState(0); // 0 to 1
 
     useEffect(() => {
-        // Detect touch device
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
             setIsTouch(true);
             return;
         }
 
+        let heatLevel = 0;
+        let lastX = 0;
+        let lastY = 0;
+
         const handleMouseMove = (e: MouseEvent) => {
             mousePos.current = { x: e.clientX, y: e.clientY };
-
             const target = e.target as HTMLElement;
             const interactiveElement = target.closest('a, button, [role="button"], .cursor-pointer');
             setIsClickable(!!interactiveElement);
 
-            // Proximity detection for content
-            const elements = document.querySelectorAll('img, p, h1, h2, h3');
-            let minDistance = 1000;
+            // Accumulate heat based on velocity
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            const velocity = Math.sqrt(dx * dx + dy * dy);
+            heatLevel += velocity * 0.005;
+            heatLevel = Math.min(1.5, heatLevel);
 
-            elements.forEach((el) => {
-                const rect = el.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const dx = e.clientX - centerX;
-                const dy = e.clientY - centerY;
-                const distance = Math.sqrt(dx * dx + dy * dy) - Math.max(rect.width, rect.height) / 2;
-
-                if (distance < minDistance) minDistance = distance;
-            });
-
-            const proxVal = Math.max(0, Math.min(1, (60 - minDistance) / 60));
-            setProximity(proxVal);
+            lastX = e.clientX;
+            lastY = e.clientY;
         };
 
-        const handleMouseDown = () => setIsPressed(true);
-        const handleMouseUp = () => setIsPressed(false);
-
         window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
+
+        const tl = gsap.timeline({ repeat: -1 });
+        const updateHeartbeat = () => {
+            tl.clear();
+            const intensity = 1 + (heatLevel * 0.3);
+            const speed = 1 - (heatLevel * 0.4);
+
+            tl.to(cursorRef.current, {
+                scale: 1.25 * intensity,
+                duration: 0.12 * speed,
+                ease: "power2.out"
+            })
+                .to(cursorRef.current, {
+                    scale: 1,
+                    duration: 0.25 * speed,
+                    ease: "power2.inOut"
+                })
+                .to(cursorRef.current, {
+                    scale: 1.15 * intensity,
+                    duration: 0.12 * speed,
+                    ease: "power2.out"
+                })
+                .to(cursorRef.current, {
+                    scale: 1,
+                    duration: 0.7 * speed,
+                    ease: "power2.inOut"
+                });
+        };
+
+        const heartInterval = setInterval(updateHeartbeat, 1500);
+        updateHeartbeat();
 
         const animate = () => {
-            cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * 0.12;
-            cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * 0.12;
+            cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * 0.15;
+            cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * 0.15;
+
+            // Decay heat over time
+            heatLevel *= 0.985;
+            if (heatLevel < 0.01) heatLevel = 0;
+            setHeat(Math.min(1, heatLevel));
 
             if (cursorRef.current) {
                 cursorRef.current.style.transform = `translate3d(${cursorPos.current.x}px, ${cursorPos.current.y}px, 0) translate(-50%, -50%)`;
+            }
+            if (glowRef.current) {
+                const flicker = 0.1 + Math.random() * 0.1;
+                glowRef.current.style.opacity = (0.2 + (heatLevel * 0.4) + flicker).toString();
+                glowRef.current.style.transform = `scale(${1 + heatLevel * 0.5})`;
             }
             requestAnimationFrame(animate);
         };
@@ -63,40 +94,51 @@ const CustomCursor: React.FC = () => {
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mousedown', handleMouseDown);
-            window.removeEventListener('mouseup', handleMouseUp);
             cancelAnimationFrame(rafId);
+            clearInterval(heartInterval);
+            tl.kill();
         };
     }, []);
 
     if (isTouch) return null;
 
-    // Base size: 32px
-    // If clickable: scale up (+40%)
-    // If just near content: scale down (-15%)
-    let scale = 1;
-    if (isClickable) {
-        scale = 1.4;
-    } else {
-        scale = 1 - proximity * 0.15;
-    }
-
-    const size = 32 * scale;
-    const opacity = (isPressed ? 0.35 : 0.4) + (proximity * 0.1) + (isClickable ? 0.2 : 0);
+    const heatColor = isClickable ? '#fff' : `rgb(255, ${249 - (heat * 154)}, ${240 - (heat * 240)})`;
+    const auraColor = `radial-gradient(circle, rgba(255, ${180 + (heat * 40)}, ${100 - (heat * 50)}, 0.8) 0%, rgba(255, 100, 50, 0) 70%)`;
 
     return (
         <div
             ref={cursorRef}
-            className="fixed top-0 left-0 z-[9999] pointer-events-none will-change-transform"
-            style={{
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity: Math.min(0.8, opacity),
-                background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 75%)',
-                borderRadius: '50%',
-                transition: 'width 0.3s cubic-bezier(0.23, 1, 0.32, 1), height 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease',
-            }}
-        />
+            className="fixed top-0 left-0 z-[9999] pointer-events-none will-change-transform flex items-center justify-center"
+        >
+            <div
+                ref={glowRef}
+                className="absolute w-12 h-12 rounded-full blur-xl transition-colors duration-500"
+                style={{
+                    background: auraColor,
+                    width: `${40 + heat * 40}px`,
+                    height: `${40 + heat * 40}px`,
+                }}
+            />
+
+            <div
+                className="relative w-2 h-2 rounded-full blur-[1px] transition-all duration-300"
+                style={{
+                    background: heatColor,
+                    boxShadow: `0 0 ${10 + heat * 15}px ${2 + heat * 5}px ${isClickable ? 'rgba(255,255,255,0.8)' : 'rgba(255, 150, 50, ' + (0.4 + heat * 0.4) + ')'}`,
+                    width: isClickable ? '7px' : (4 + heat * 2) + 'px',
+                    height: isClickable ? '7px' : (4 + heat * 2) + 'px',
+                }}
+            />
+
+            <div
+                className="absolute w-4 h-5 opacity-40 blur-md rotate-45 animate-pulse"
+                style={{
+                    borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%',
+                    background: `rgba(255, ${150 + heat * 105}, 50, ${0.1 + heat * 0.2})`,
+                    transform: `scale(${1 + heat * 0.3}) rotate(${45 + heat * 15}deg)`
+                }}
+            />
+        </div>
     );
 };
 
