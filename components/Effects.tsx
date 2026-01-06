@@ -25,8 +25,8 @@ const Effects = () => {
     } = useControls('Post Processing', {
         'Bloom': folder({
             bloomEnabled: { value: true, label: 'Enabled' },
-            bloomIntensity: { value: 0.06, min: 0, max: 5, label: 'Intensity' },
-            bloomLuminanceThreshold: { value: 1., min: 0, max: 1, label: 'Threshold' },
+            bloomIntensity: { value: 0.01, min: 0, max: 0, label: 'Intensity' },
+            bloomLuminanceThreshold: { value: 0., min: 0, max: 0, label: 'Threshold' },
         }),
         'Vignette': folder({
             vignetteEnabled: { value: true, label: 'Enabled' },

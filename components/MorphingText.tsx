@@ -58,7 +58,7 @@ const MorphingText: React.FC = () => {
             <div
                 ref={textRef}
                 style={{
-                    fontSize: '22vw',
+                    fontSize: '20vw',
                     lineHeight: '1.2',
                     fontFamily: "'Inter', sans-serif", // Usando Inter para poder usar Bold alto
                     fontWeight: 900,

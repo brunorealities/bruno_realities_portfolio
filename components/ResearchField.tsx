@@ -77,7 +77,7 @@ const ResearchPlane = ({ item, index, count, onSelect, focusedId, onHoverChange 
         // Fibonacci Sphere algorithm for even distribution
         const phi = Math.acos(-1 + (2 * index) / count);
         const theta = Math.sqrt(count * Math.PI) * phi;
-        const radius = 4; // Sphere radius
+        const radius = 2; // Sphere radius
 
         const pos = new THREE.Vector3(
             Math.cos(theta) * Math.sin(phi) * radius,
@@ -97,14 +97,30 @@ const ResearchPlane = ({ item, index, count, onSelect, focusedId, onHoverChange 
     const isFocused = focusedId === item.id;
     const isAnyFocused = focusedId !== null;
 
+    const { camera } = useThree();
+    const tempVec = useMemo(() => new THREE.Vector3(), []);
+
     useFrame(() => {
         if (isFocused) {
-            meshRef.current.position.lerp(new THREE.Vector3(0, 0, 4), 0.08);
-            meshRef.current.scale.lerp(new THREE.Vector3(4.5, 3.2, 1), 0.08);
+            // Natural scale without distortion at proximity
+            meshRef.current.position.lerp(new THREE.Vector3(0, 0, 3.5), 0.08); // Fixed z=3.5 for better viewing distance
+            meshRef.current.scale.lerp(new THREE.Vector3(2.4, 1.8, 1), 0.08);
             meshRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
         } else {
             const targetPos = position.clone();
-            const targetScale = hovered && !isAnyFocused ? 1.4 : 1.2;
+
+            // Dynamic Edge Scaling Logic
+            // Calculate distance from screen center to shrink items at edges
+            meshRef.current.getWorldPosition(tempVec);
+            tempVec.project(camera); // Convert to Normalized Device Coordinates (-1 to 1)
+
+            // Distance from center of screen (0,0)
+            const distFromCenter = Math.sqrt(tempVec.x * tempVec.x + tempVec.y * tempVec.y);
+            // Shrink as we reach edges (distFromCenter approaches 1+)
+            const edgeScale = Math.max(0.6, 1.1 - distFromCenter * 0.4);
+
+            const baseScale = hovered && !isAnyFocused ? 1.4 : 1.2;
+            const targetScale = baseScale * edgeScale;
             const targetOpacity = isAnyFocused ? 0.05 : (hovered ? 1 : 0.4);
 
             meshRef.current.position.lerp(targetPos, 0.08);
@@ -250,7 +266,7 @@ const ResearchField: React.FC<{
     return (
         <div className={`w-full h-screen ${(hoveredId || focusedItem) ? 'cursor-pointer' : 'cursor-crosshair'}`}>
             <Canvas gl={{ alpha: true, antialias: true }} dpr={[1, 2]}>
-                <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={40} />
+                <PerspectiveCamera makeDefault position={[0, 0, 4]} fov={60} near={0.1} />
                 <ambientLight intensity={0.8} />
                 <pointLight position={[10, 10, 10]} intensity={1} />
                 <ResearchGallery

@@ -239,7 +239,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             <div className="max-w-xs">
               <h3 className="font-system text-[10px] tracking-[0.3em] mb-6 opacity-30 uppercase">Lines of Investigation</h3>
               <ul className="space-y-3 opacity-60">
-                {["Artificial Intimacy", "Body as Interface", "Distortion as Symptom", "Fragmented Presence"].map((item, i) => (
+                {["Artificial Intimacy", "Virtualization of Embodiment", "Post-Anatomical Bodies", "Distortion Surfaces"].map((item, i) => (
                   <li key={i} className="flex items-center gap-3">
                     <span className="w-1 h-[1px] bg-black/30"></span>
                     <span className="font-system text-xs tracking-widest uppercase">{item}</span>
