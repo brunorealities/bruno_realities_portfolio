@@ -29,3 +29,35 @@
   --cloud-dancer: #F2F0ED;
   --ink: #000000;
 }
+
+/* Glassmorphism Styles */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.glass-card-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card--default {
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+}
+
+.glass-card--compact {
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+.glass-card--hero {
+  padding: 4rem;
+  border-radius: 2rem;
+}

@@ -168,12 +168,10 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
           </div>
 
           <div className="absolute bottom-10 right-10 text-right hidden md:block text-black">
-            <GlassCard variant="compact" dark>
-              <p className="font-system text-[9px] leading-relaxed opacity-60">
-                Phase: Fragmented<br />
-                Status: Actuated
-              </p>
-            </GlassCard>
+            <p className="font-system text-[9px] leading-relaxed opacity-60">
+              Phase: Fragmented<br />
+              Status:  De-Virtuality
+            </p>
           </div>
         </div>
 
@@ -186,8 +184,8 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
 
       {/* ABOUT SECTION */}
       <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
-        <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none scale-100 opacity-100' : ''}`}>
-          <img src="/images/PERFIL.jpg" alt="Artist Portrait" className="w-full h-full object-cover" />
+        <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none opacity-100' : ''}`}>
+          <img src="/images/PERFIL.jpg" alt="Artist Portrait" className="w-full h-full object-cover object-[center_20%] -scale-x-100" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
         </div>
 
@@ -198,16 +196,16 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
             </div>
           </div>
 
-          <div className="reveal flex justify-end items-end">
-            <div className="max-w-4xl text-right pointer-events-auto">
-              <p className="font-system text-[3.8vw] md:text-[2.8vw] text-white leading-[0.95] tracking-[-0.07em] mb-4 uppercase">
+          <div className="reveal flex justify-end items-end h-full">
+            <GlassCard variant="compact" dark className="max-w-2xl text-right pointer-events-auto">
+              <p className="font-system text-[3.8vw] md:text-[2.2vw] text-white leading-[0.95] tracking-[-0.07em] mb-4 uppercase">
                 New media artist investigating the boundaries between visceral flesh and digital simulacrums. Through 3D modeling, glitch art, and immersive installations, the artist distorts post-anatomical figures to confront sterile virtuality with physical friction, denouncing the artificialization of intimate territories.
               </p>
-              <div className="mt-12 flex justify-end items-center gap-6 opacity-30">
+              <div className="mt-8 flex justify-end items-center gap-6 opacity-30">
                 <span className="font-system text-[9px] text-white tracking-[0.4em]">status.presence // active</span>
                 <div className="w-12 h-[1px] bg-white/40"></div>
               </div>
-            </div>
+            </GlassCard>
           </div>
         </div>
       </section>
