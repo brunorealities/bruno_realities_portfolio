@@ -187,7 +187,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       {/* ABOUT SECTION */}
       <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
         <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none scale-100 opacity-100' : ''}`}>
-          <img src="images/FOTO2.png" alt="Artist Portrait" className="w-full h-full object-cover" />
+          <img src="dist\images\PERFIL.jpg" alt="Artist Portrait" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
         </div>
 

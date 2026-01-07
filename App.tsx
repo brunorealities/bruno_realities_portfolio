@@ -7,6 +7,8 @@ import Overlay from './components/Overlay';
 import ProjectDetail from './components/ProjectDetail';
 import CustomCursor from './components/CustomCursor';
 import { Leva } from 'leva';
+import MobileMenu from './components/MobileMenu';
+
 gsap.registerPlugin(ScrollTrigger);
 
 // Global Debug Toggle - Set to false to hide all controls by default
@@ -27,6 +29,7 @@ const App: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [researchFocus, setResearchFocus] = useState<{ texture: any; progress: number; center?: any } | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     if (selectedProject) return;
@@ -47,8 +50,7 @@ const App: React.FC = () => {
     };
   }, [selectedProject]);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    e.preventDefault();
+  const handleNavClick = (targetId: string) => {
     setSelectedProject(null);
     setTimeout(() => {
       const element = document.getElementById(targetId);
@@ -79,6 +81,15 @@ const App: React.FC = () => {
         />
       </div>
 
+      {/* Responsive Menu Navigation */}
+      {!selectedProject && (
+        <MobileMenu
+          isOpen={isMenuOpen}
+          onToggle={() => setIsMenuOpen(!isMenuOpen)}
+          onNavClick={handleNavClick}
+        />
+      )}
+
       <nav className={`fixed top-0 left-0 w-full px-10 py-10 z-50 flex justify-between items-start pointer-events-none transition-transform duration-[1.2s] ease-in-out ${selectedProject ? '-translate-y-full' : 'translate-y-0'}`}>
         <div
           onClick={scrollToTop}
@@ -87,7 +98,7 @@ const App: React.FC = () => {
           Bruno Realities
         </div>
 
-        <div className="flex space-x-12 pointer-events-auto">
+        <div className="hidden md:flex space-x-12 pointer-events-auto">
           {[
             { id: 'about', label: 'About' },
             { id: 'works', label: 'Works' },
@@ -97,7 +108,10 @@ const App: React.FC = () => {
             <a
               key={item.id}
               href={`#${item.id}`}
-              onClick={(e) => handleNavClick(e, item.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(item.id);
+              }}
               className="text-[10px] font-display-bold uppercase tracking-[0.2em] text-black hover:opacity-50 transition-opacity"
             >
               {item.label}
