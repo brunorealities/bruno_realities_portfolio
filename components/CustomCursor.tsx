@@ -8,6 +8,7 @@ const CustomCursor: React.FC = () => {
     const cursorPos = useRef({ x: 0, y: 0 });
     const [isTouch, setIsTouch] = useState(false);
     const [isClickable, setIsClickable] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const [heat, setHeat] = useState(0); // 0 to 1
 
     useEffect(() => {
@@ -21,6 +22,7 @@ const CustomCursor: React.FC = () => {
         let lastY = 0;
 
         const handleMouseMove = (e: MouseEvent) => {
+            if (!isVisible) setIsVisible(true);
             mousePos.current = { x: e.clientX, y: e.clientY };
             const target = e.target as HTMLElement;
             const interactiveElement = target.closest('a, button, [role="button"], .cursor-pointer');
@@ -37,7 +39,14 @@ const CustomCursor: React.FC = () => {
             lastY = e.clientY;
         };
 
+        const handleMouseLeave = () => setIsVisible(false);
+        const handleMouseEnter = () => setIsVisible(true);
+        const handleFocus = () => setIsVisible(true);
+
         window.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseleave', handleMouseLeave);
+        document.addEventListener('mouseenter', handleMouseEnter);
+        window.addEventListener('focus', handleFocus);
 
         const tl = gsap.timeline({ repeat: -1 });
         const updateHeartbeat = () => {
@@ -81,10 +90,11 @@ const CustomCursor: React.FC = () => {
 
             if (cursorRef.current) {
                 cursorRef.current.style.transform = `translate3d(${cursorPos.current.x}px, ${cursorPos.current.y}px, 0) translate(-50%, -50%)`;
+                cursorRef.current.style.opacity = isVisible ? '1' : '0';
             }
             if (glowRef.current) {
                 const flicker = 0.1 + Math.random() * 0.1;
-                glowRef.current.style.opacity = (0.2 + (heatLevel * 0.4) + flicker).toString();
+                glowRef.current.style.opacity = (isVisible ? (0.2 + (heatLevel * 0.4) + flicker) : 0).toString();
                 glowRef.current.style.transform = `scale(${1 + heatLevel * 0.5})`;
             }
             requestAnimationFrame(animate);
@@ -94,11 +104,14 @@ const CustomCursor: React.FC = () => {
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseleave', handleMouseLeave);
+            document.removeEventListener('mouseenter', handleMouseEnter);
+            window.removeEventListener('focus', handleFocus);
             cancelAnimationFrame(rafId);
             clearInterval(heartInterval);
             tl.kill();
         };
-    }, []);
+    }, [isVisible]);
 
     if (isTouch) return null;
 
@@ -108,7 +121,8 @@ const CustomCursor: React.FC = () => {
     return (
         <div
             ref={cursorRef}
-            className="fixed top-0 left-0 z-[9999] pointer-events-none will-change-transform flex items-center justify-center"
+            className="fixed top-0 left-0 z-[9999] pointer-events-none will-change-transform flex items-center justify-center opacity-0 transition-opacity duration-300"
+            style={{ opacity: isVisible ? 1 : 0 }}
         >
             <div
                 ref={glowRef}

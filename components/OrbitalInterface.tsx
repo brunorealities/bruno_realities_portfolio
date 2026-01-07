@@ -362,6 +362,13 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                         <div
                             className="relative w-[35vh] lg:w-[55vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
                             onClick={() => onWorkClick(work)}
+                            onTouchStart={(e) => {
+                                handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                            }}
+                            onTouchMove={(e) => {
+                                handleMove(e.touches[0].clientX, e.touches[0].clientY, true);
+                            }}
+                            onTouchEnd={handleEnd}
                         >
                             <img src={work.image} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-[2s]" alt={work.title} />
 
