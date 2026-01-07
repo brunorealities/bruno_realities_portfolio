@@ -203,7 +203,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[130vh] lg:h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-start overflow-hidden bg-transparent select-none touch-none pb-8 lg:pb-0"
+            className="relative w-full h-[120vh] lg:h-[80vh] flex flex-col lg:flex-row items-center justify-center lg:justify-center overflow-hidden bg-transparent select-none touch-none pb-4 lg:pb-0"
             onTouchStart={(e) => {
                 handleStart(e.touches[0].clientX, e.touches[0].clientY);
             }}
@@ -225,11 +225,11 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             `}</style>
 
             {/* 1. GRAIN DIAL */}
-            <div className="relative w-full h-[40vh] lg:h-full lg:w-[45%] flex items-center justify-center z-50 p-4 lg:p-20 order-first lg:order-none pointer-events-none lg:pointer-events-auto">
+            <div className="relative w-full h-[40vh] lg:h-full lg:w-[35%] flex items-center justify-center z-50 p-4 lg:p-0 order-first lg:order-none pointer-events-none lg:pointer-events-auto">
                 <div
                     ref={dialRef}
                     onMouseDown={(e) => { e.stopPropagation(); handleStart(e.clientX, e.clientY); }}
-                    className="relative w-[30vh] h-[30vh] lg:w-[65vh] lg:h-[65vh] rounded-full cursor-grab active:cursor-grabbing group touch-none pointer-events-auto"
+                    className="relative w-[30vh] h-[30vh] lg:w-[55vh] lg:h-[55vh] rounded-full cursor-grab active:cursor-grabbing group touch-none pointer-events-auto"
                 >
                     <div className="absolute inset-0 rounded-full border border-black/[0.08] shadow-[0_0_150px_rgba(0,0,0,0.01)]" />
                     <div className="absolute inset-[15%] rounded-full border border-black/[0.04]" />
@@ -238,7 +238,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                     {/* Core */}
                     <div className="absolute inset-0 flex items-center justify-center p-12 lg:p-24 pointer-events-none">
                         <div className="inner-core w-full h-full rounded-full bg-white/40 backdrop-blur-3xl border border-white/50 flex flex-col items-center justify-center gap-2 lg:gap-4 shadow-[inset_0_0_50px_rgba(255,255,255,0.3)]">
-                            <span className="font-system text-[7px] lg:text-[10px] tracking-[0.5em] font-bold uppercase opacity-60">Neural_Reader_V4</span>
+                            <span className="font-system text-[7px] lg:text-[10px] tracking-[0.5em] font-bold uppercase opacity-80 text-black px-4 text-center">{works[activeIndex]?.title || 'Neural_Reader'}</span>
                             <div className="w-8 lg:w-16 h-[1px] bg-black/10" />
                             <div className="flex flex-col items-center gap-1">
                                 <span className="font-system text-[6px] lg:text-[8px] tracking-[0.2em] opacity-40 uppercase">Sync_Buffer</span>
@@ -268,7 +268,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             </div>
 
             {/* 2. MEMORY TRAIL */}
-            <div ref={trailRef} className="relative w-full h-[80vh] lg:h-full lg:w-[55%] flex items-center justify-center lg:justify-start overflow-visible pointer-events-none">
+            <div ref={trailRef} className="relative w-full h-[40vh] lg:h-full lg:w-[50%] flex items-center justify-center lg:justify-center overflow-visible pointer-events-none pt-12 lg:pt-32">
                 {works.map((work, idx) => (
                     <div
                         key={idx}
@@ -276,7 +276,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                         className="absolute will-change-transform"
                     >
                         <div
-                            className="relative w-[35vh] lg:w-[75vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
+                            className="relative w-[35vh] lg:w-[60vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
                             onClick={() => onWorkClick(work)}
                         >
                             <img src={work.image} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-[2s]" alt={work.title} />
@@ -300,8 +300,6 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             <div className="fixed inset-0 pointer-events-none z-[70]">
                 <div className="absolute top-12 left-12 lg:top-24 lg:left-24 flex flex-col gap-3 opacity-30">
                     <div className="flex items-center gap-4">
-                        <div className="w-1.5 h-1.5 bg-black rotate-45" />
-                        <span className="font-system text-[8px] lg:text-[10px] tracking-[0.8em] uppercase font-bold">Temporal_Eixo_X</span>
                     </div>
                 </div>
             </div>

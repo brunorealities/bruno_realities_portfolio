@@ -194,7 +194,6 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
         <div className="relative z-10 h-full min-h-screen flex flex-col justify-between p-10 md:p-20 pt-32 md:pt-40 pointer-events-none">
           <div className="reveal flex justify-start">
             <div className="border-t border-white/20 pt-4">
-              <span className="font-system text-[9px] text-white opacity-40 block mb-1">Ref. AI-00 // Archive</span>
               <h3 className="font-system text-[11px] text-white tracking-[0.3em] opacity-80 uppercase leading-none">Artist Statement</h3>
             </div>
           </div>
@@ -216,7 +215,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <div className="divider-dark" />
 
       {/* WORKS SECTION */}
-      <section id="works" className="min-h-screen border-t border-black/5 pb-4 md:pb-40">
+      <section id="works" className="min-h-[80vh] border-t border-black/5 pb-4 md:pb-10">
         <div className="relative z-10">
           <OrbitalInterface
             works={works}
