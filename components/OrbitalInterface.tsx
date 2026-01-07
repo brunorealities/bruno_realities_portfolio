@@ -24,6 +24,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     // Refs for performance-critical data
     const dialRef = useRef<HTMLDivElement>(null);
     const trailRef = useRef<HTMLDivElement>(null);
+    const filmStripRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const rotation = useRef(0);
@@ -31,12 +32,14 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     const lastPos = useRef({ x: 0, y: 0 });
     const isInteracting = useRef(false);
     const snapTimeout = useRef<NodeJS.Timeout | null>(null);
+    const startPos = useRef({ x: 0, y: 0 });
+    const touchDirection = useRef<'none' | 'horizontal' | 'vertical'>('none');
 
     const ITEM_ANGLE = 360 / works.length;
 
     // --- DIRECT DOM UPDATER (Bypass React for 60fps) ---
     const updateVisuals = useCallback(() => {
-        if (!dialRef.current || !trailRef.current) return;
+        if (!dialRef.current || !trailRef.current || !filmStripRef.current) return;
 
         // 1. Update Dial Rotation
         gsap.set(dialRef.current, { rotation: rotation.current });
@@ -47,13 +50,22 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
         if (inner) gsap.set(inner, { rotation: -rotation.current });
         if (pointer) gsap.set(pointer, { rotation: -rotation.current });
 
-        // 3. Update Memory Trail (Memory blocks)
+        // 3. Update active index and strip position
         const normalizedRotation = ((rotation.current % 360) + 360) % 360;
         const currentActive = Math.round(normalizedRotation / ITEM_ANGLE) % works.length;
 
         // Notify React only when index changes to avoid heavy re-renders
         setActiveIndex(prev => prev !== currentActive ? currentActive : prev);
 
+        // Update Film Strip (Vertical Reel)
+        // We move the strip vertically: -currentActive * itemHeight
+        const itemHeight = 101; // 85px h + 16px mb
+        gsap.set(filmStripRef.current, {
+            y: -currentActive * itemHeight,
+            autoAlpha: 1
+        });
+
+        // Update Trail (Main Cards)
         const blocks = trailRef.current.children;
         for (let i = 0; i < blocks.length; i++) {
             const block = blocks[i] as HTMLElement;
@@ -64,16 +76,16 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             const offset = isPast ? diff - works.length : diff;
 
             const isActive = idx === currentActive;
-            const isVisible = Math.abs(offset) <= 3;
+            const isVisible = Math.abs(offset) <= 2;
 
             gsap.set(block, {
                 xPercent: offset * 115,
                 z: -Math.abs(offset) * 150,
-                scale: isActive ? 1.05 : 0.75,
-                rotateY: offset * -12,
-                opacity: isVisible ? (isActive ? 1 : 0.4 / (Math.abs(offset) + 0.5)) : 0,
+                scale: isActive ? 1.05 : 0.6,
+                rotateY: offset * -8,
+                opacity: isVisible ? (isActive ? 1 : 0.2) : 0,
                 zIndex: 10 - Math.abs(offset),
-                filter: isActive ? 'blur(0px)' : `blur(${Math.min(Math.abs(offset) * 8, 25)}px)`,
+                filter: isActive ? 'blur(0px)' : `blur(12px)`,
                 pointerEvents: isActive ? 'auto' : 'none'
             });
 
@@ -83,6 +95,20 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                 if (isActive) overlay.classList.add('active');
                 else overlay.classList.remove('active');
             }
+        }
+
+        // Update individual film frames
+        const frames = filmStripRef.current.children;
+        for (let i = 0; i < frames.length; i++) {
+            const frame = frames[i] as HTMLElement;
+            const idx = i;
+            const isActive = idx === currentActive;
+            gsap.set(frame, {
+                scale: isActive ? 1.1 : 0.8,
+                opacity: isActive ? 1 : 0.5,
+                x: isActive ? 10 : 0,
+                borderColor: isActive ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.1)'
+            });
         }
     }, [ITEM_ANGLE, works.length]);
 
@@ -104,6 +130,8 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
         lastAngle.current = getAngle(clientX, clientY);
         lastPos.current = { x: clientX, y: clientY };
+        startPos.current = { x: clientX, y: clientY };
+        touchDirection.current = 'none';
     };
 
     const handleMove = (clientX: number, clientY: number, isSwipe = false) => {
@@ -111,7 +139,25 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
         let delta = 0;
         if (isSwipe) {
-            delta = (clientX - lastPos.current.x) * 0.5;
+            if (touchDirection.current === 'vertical') return;
+
+            const dx = Math.abs(clientX - startPos.current.x);
+            const dy = Math.abs(clientY - startPos.current.y);
+
+            if (touchDirection.current === 'none') {
+                if (dx > 5 || dy > 5) {
+                    if (dy > dx) {
+                        touchDirection.current = 'vertical';
+                        return;
+                    } else {
+                        touchDirection.current = 'horizontal';
+                    }
+                } else {
+                    return;
+                }
+            }
+
+            delta = (clientX - lastPos.current.x) * 0.8;
             lastPos.current = { x: clientX, y: clientY };
         } else {
             const currentAngle = getAngle(clientX, clientY);
@@ -203,7 +249,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[120vh] lg:h-[80vh] flex flex-col lg:flex-row items-center justify-center lg:justify-center overflow-hidden bg-transparent select-none touch-none pb-4 lg:pb-0"
+            className="relative w-full h-[130vh] lg:h-[95vh] flex flex-col lg:flex-row items-center justify-center lg:justify-center overflow-hidden bg-transparent select-none touch-pan-y pb-4 lg:pb-0"
             onTouchStart={(e) => {
                 handleStart(e.touches[0].clientX, e.touches[0].clientY);
             }}
@@ -226,10 +272,43 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
 
             {/* 1. GRAIN DIAL */}
             <div className="relative w-full h-[40vh] lg:h-full lg:w-[35%] flex items-center justify-center z-50 p-4 lg:p-0 order-first lg:order-none pointer-events-none lg:pointer-events-auto">
+                {/* FILM STRIP (VERTICAL REEL) */}
+                <div className="absolute right-[-10%] lg:right-[-5%] h-[350px] w-[100px] overflow-hidden pointer-events-none z-0 hidden lg:flex items-center">
+                    {/* Connector Line to Dial */}
+                    <div className="absolute left-0 w-8 h-[1px] bg-black/10 z-20" />
+
+                    <div className="relative h-full w-full overflow-hidden">
+                        <div className="absolute inset-0 border-x border-black/5 z-10" />
+                        <div ref={filmStripRef} className="flex flex-col gap-0 items-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] py-[125px]">
+                            {works.map((work, idx) => (
+                                <div
+                                    key={idx}
+                                    className="w-16 h-[85px] mb-4 border border-black/10 bg-white shadow-sm overflow-hidden flex-shrink-0 relative group"
+                                    style={{ transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                                >
+                                    <img src={work.image} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-100 transition-opacity" alt="" />
+                                    {/* Film Sprockets - Left */}
+                                    <div className="absolute left-1 top-0 bottom-0 flex flex-col justify-around py-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <div key={i} className="w-1.5 h-1.5 bg-black/20" />
+                                        ))}
+                                    </div>
+                                    {/* Film Sprockets - Right */}
+                                    <div className="absolute right-1 top-0 bottom-0 flex flex-col justify-around py-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <div key={i} className="w-1.5 h-1.5 bg-black/20" />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 <div
                     ref={dialRef}
                     onMouseDown={(e) => { e.stopPropagation(); handleStart(e.clientX, e.clientY); }}
-                    className="relative w-[30vh] h-[30vh] lg:w-[55vh] lg:h-[55vh] rounded-full cursor-grab active:cursor-grabbing group touch-none pointer-events-auto"
+                    className="relative w-[30vh] h-[30vh] lg:w-[55vh] lg:h-[55vh] rounded-full cursor-grab active:cursor-grabbing group touch-pan-y pointer-events-auto"
                 >
                     <div className="absolute inset-0 rounded-full border border-black/[0.08] shadow-[0_0_150px_rgba(0,0,0,0.01)]" />
                     <div className="absolute inset-[15%] rounded-full border border-black/[0.04]" />
@@ -268,7 +347,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             </div>
 
             {/* 2. MEMORY TRAIL */}
-            <div ref={trailRef} className="relative w-full h-[40vh] lg:h-full lg:w-[50%] flex items-center justify-center lg:justify-center overflow-visible pointer-events-none pt-12 lg:pt-32">
+            <div ref={trailRef} className="relative w-full h-[40vh] lg:h-full lg:w-[50%] flex items-center justify-center lg:justify-center overflow-visible pointer-events-none">
                 {works.map((work, idx) => (
                     <div
                         key={idx}
@@ -276,12 +355,12 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                         className="absolute will-change-transform"
                     >
                         <div
-                            className="relative w-[35vh] lg:w-[60vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
+                            className="relative w-[35vh] lg:w-[55vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
                             onClick={() => onWorkClick(work)}
                         >
                             <img src={work.image} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-[2s]" alt={work.title} />
 
-                            <div className="text-overlay absolute bottom-0 left-0 w-full p-4 lg:p-12">
+                            <div className="text-overlay absolute bottom-4 lg:bottom-12 left-0 w-full p-4 lg:px-12">
                                 <div className="bg-white/60 backdrop-blur-xl p-4 lg:p-8 border-l-[4px] border-black flex flex-col gap-2 lg:gap-4 shadow-2xl max-w-[95%] lg:max-w-[85%]">
                                     <div className="flex justify-between items-center opacity-50">
                                         <span className="font-system text-[7px] lg:text-[9px] tracking-[0.4em] uppercase font-bold">{work.year} // Fragment</span>
