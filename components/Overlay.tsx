@@ -187,7 +187,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       {/* ABOUT SECTION */}
       <section id="about" onClick={() => setIsAboutRevealed(!isAboutRevealed)} className="relative min-h-screen w-full overflow-hidden bg-black group/about">
         <div className={`absolute inset-0 z-0 transition-all duration-[2s] ease-in-out grayscale blur-2xl opacity-100 group-hover/about:grayscale-0 group-hover/about:opacity-100 group-hover/about:blur-none scale-110 group-hover/about:scale-100 ${isAboutRevealed ? 'grayscale-0 blur-none scale-100 opacity-100' : ''}`}>
-          <img src="dist\images\PERFIL.jpg" alt="Artist Portrait" className="w-full h-full object-cover" />
+          <img src="/images/PERFIL.jpg" alt="Artist Portrait" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
         </div>
 
@@ -216,7 +216,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <div className="divider-dark" />
 
       {/* WORKS SECTION */}
-      <section id="works" className="min-h-screen border-t border-black/5">
+      <section id="works" className="min-h-screen border-t border-black/5 pb-4 md:pb-40">
         <div className="relative z-10">
           <OrbitalInterface
             works={works}
@@ -228,7 +228,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <div className="divider-dark" />
 
       {/* RESEARCH SECTION - Laboratory Archive Redesign */}
-      <section id="research" className="min-h-screen py-32 px-10 bg-white/5 backdrop-blur-[2px] text-black relative overflow-hidden">
+      <section id="research" className="min-h-screen pt-12 pb-32 md:py-32 px-10 bg-white/5 backdrop-blur-[2px] text-black relative overflow-hidden">
         <div className="max-w-screen-xl mx-auto relative z-10">
           <div className="mb-20 reveal border-t border-black/10 pt-8 flex flex-col md:flex-row justify-between items-start gap-12">
             <div>

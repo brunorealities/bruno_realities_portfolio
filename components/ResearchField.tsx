@@ -103,14 +103,24 @@ const ResearchPlane = ({ item, index, count, onSelect, focusedId, onHoverChange 
 
     useFrame(() => {
         if (isFocused) {
-            // Natural scale without distortion at proximity
-            // Adjust z and scale for mobile
-            const targetZ = isMobile ? 2.5 : 3.5;
-            const targetScale = isMobile ? new THREE.Vector3(1.2, 0.9, 1) : new THREE.Vector3(2.4, 1.8, 1);
+            // Calculate a point in front of the camera based on its current position
+            // This keeps the focused image at a constant DISTANCE from the viewer
+            const viewDistance = isMobile ? 1.5 : 2.5;
+            const targetZ = camera.position.z - viewDistance;
 
-            meshRef.current.position.lerp(new THREE.Vector3(0, 0, targetZ), 0.08);
-            meshRef.current.scale.lerp(targetScale, 0.08);
-            meshRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
+            const targetScale = isMobile ? new THREE.Vector3(1.1, 1.1, 1) : new THREE.Vector3(3.0, 2.0, 1);
+
+            meshRef.current.position.lerp(new THREE.Vector3(0, 0, targetZ), 0.1);
+            meshRef.current.scale.lerp(targetScale, 0.1);
+            meshRef.current.quaternion.slerp(new THREE.Quaternion(), 0.1);
+
+            if (meshRef.current.material) {
+                (meshRef.current.material as any).opacity = THREE.MathUtils.lerp(
+                    (meshRef.current.material as any).opacity,
+                    1,
+                    0.1
+                );
+            }
         } else {
             const targetPos = position.clone();
 
@@ -123,10 +133,12 @@ const ResearchPlane = ({ item, index, count, onSelect, focusedId, onHoverChange 
 
             const baseScale = hovered && !isAnyFocused ? (isMobile ? 1.2 : 1.4) : (isMobile ? 1.0 : 1.2);
             const targetScale = baseScale * edgeScale;
-            const targetOpacity = isAnyFocused ? 0.05 : (hovered ? 1 : 0.4);
+
+            // Completely hide non-focused items to prevent Z-fighting and breakage
+            const targetOpacity = isAnyFocused ? 0 : (hovered ? 1 : 0.85);
 
             meshRef.current.position.lerp(targetPos, 0.08);
-            meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale * 0.7, 1), 0.08);
+            meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale * 0.75, 1), 0.08);
             meshRef.current.quaternion.slerp(quaternion, 0.08);
 
             if (meshRef.current.material) {
@@ -135,6 +147,8 @@ const ResearchPlane = ({ item, index, count, onSelect, focusedId, onHoverChange 
                     targetOpacity,
                     0.08
                 );
+                // Also disable pointer events for hidden items
+                meshRef.current.visible = (targetOpacity > 0.01 || !isAnyFocused);
             }
         }
     });

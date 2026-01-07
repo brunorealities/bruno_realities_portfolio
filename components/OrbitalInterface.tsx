@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { gsap } from 'gsap';
 
 export interface Work {
@@ -18,20 +18,75 @@ interface OrbitalInterfaceProps {
 }
 
 const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick }) => {
+    // React state only for critical path changes (Active Index)
     const [activeIndex, setActiveIndex] = useState(0);
-    const [rotation, setRotation] = useState(0);
-    const [isInteracting, setIsInteracting] = useState(false);
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    // Refs for performance-critical data
     const dialRef = useRef<HTMLDivElement>(null);
-    const lastPos = useRef({ x: 0, y: 0 });
+    const trailRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const rotation = useRef(0);
     const lastAngle = useRef(0);
-    const rotationObj = useRef({ val: 0 }); // Use ref to track rotation for GSAP and eliminate friction
+    const lastPos = useRef({ x: 0, y: 0 });
+    const isInteracting = useRef(false);
     const snapTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const ITEM_ANGLE = 360 / works.length;
 
-    // --- ANGLE CALCULATION FOR ROTATION ---
+    // --- DIRECT DOM UPDATER (Bypass React for 60fps) ---
+    const updateVisuals = useCallback(() => {
+        if (!dialRef.current || !trailRef.current) return;
+
+        // 1. Update Dial Rotation
+        gsap.set(dialRef.current, { rotation: rotation.current });
+
+        // 2. Update Inner Dial Counter-Rotation (for text readability)
+        const inner = dialRef.current.querySelector('.inner-core') as HTMLElement;
+        const pointer = dialRef.current.querySelector('.selection-pointer') as HTMLElement;
+        if (inner) gsap.set(inner, { rotation: -rotation.current });
+        if (pointer) gsap.set(pointer, { rotation: -rotation.current });
+
+        // 3. Update Memory Trail (Memory blocks)
+        const normalizedRotation = ((rotation.current % 360) + 360) % 360;
+        const currentActive = Math.round(normalizedRotation / ITEM_ANGLE) % works.length;
+
+        // Notify React only when index changes to avoid heavy re-renders
+        setActiveIndex(prev => prev !== currentActive ? currentActive : prev);
+
+        const blocks = trailRef.current.children;
+        for (let i = 0; i < blocks.length; i++) {
+            const block = blocks[i] as HTMLElement;
+            const idx = parseInt(block.dataset.index || "0");
+
+            const diff = (idx - currentActive + works.length) % works.length;
+            const isPast = diff > works.length / 2;
+            const offset = isPast ? diff - works.length : diff;
+
+            const isActive = idx === currentActive;
+            const isVisible = Math.abs(offset) <= 3;
+
+            gsap.set(block, {
+                xPercent: offset * 115,
+                z: -Math.abs(offset) * 150,
+                scale: isActive ? 1.05 : 0.75,
+                rotateY: offset * -12,
+                opacity: isVisible ? (isActive ? 1 : 0.4 / (Math.abs(offset) + 0.5)) : 0,
+                zIndex: 10 - Math.abs(offset),
+                filter: isActive ? 'blur(0px)' : `blur(${Math.min(Math.abs(offset) * 8, 25)}px)`,
+                pointerEvents: isActive ? 'auto' : 'none'
+            });
+
+            // Handle interior overlay class
+            const overlay = block.querySelector('.text-overlay');
+            if (overlay) {
+                if (isActive) overlay.classList.add('active');
+                else overlay.classList.remove('active');
+            }
+        }
+    }, [ITEM_ANGLE, works.length]);
+
+    // --- ANGLE CALCULATION ---
     const getAngle = (clientX: number, clientY: number) => {
         if (!dialRef.current) return 0;
         const rect = dialRef.current.getBoundingClientRect();
@@ -41,11 +96,10 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
         return (rad * 180) / Math.PI;
     };
 
-    // --- INTERACTION HANDLERS ---
+    // --- INTERACTION LOGIC ---
     const handleStart = (clientX: number, clientY: number) => {
-        setIsInteracting(true);
-        // Kill any existing snap animations immediately on user contact
-        gsap.killTweensOf(rotationObj.current);
+        isInteracting.current = true;
+        gsap.killTweensOf(rotation);
         if (snapTimeout.current) clearTimeout(snapTimeout.current);
 
         lastAngle.current = getAngle(clientX, clientY);
@@ -53,12 +107,11 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     };
 
     const handleMove = (clientX: number, clientY: number, isSwipe = false) => {
-        if (!isInteracting && !isSwipe) return;
+        if (!isInteracting.current && !isSwipe) return;
 
         let delta = 0;
         if (isSwipe) {
-            const deltaX = clientX - lastPos.current.x;
-            delta = deltaX * 0.5;
+            delta = (clientX - lastPos.current.x) * 0.5;
             lastPos.current = { x: clientX, y: clientY };
         } else {
             const currentAngle = getAngle(clientX, clientY);
@@ -68,65 +121,46 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             lastAngle.current = currentAngle;
         }
 
-        rotationObj.current.val += delta;
-        setRotation(rotationObj.current.val);
+        rotation.current += delta;
+        updateVisuals();
     };
 
     const handleEnd = () => {
-        setIsInteracting(false);
+        isInteracting.current = false;
         scheduleSnap();
     };
 
-    // --- SMOOTH SNAP LOGIC ---
     const scheduleSnap = useCallback(() => {
         if (snapTimeout.current) clearTimeout(snapTimeout.current);
 
         snapTimeout.current = setTimeout(() => {
-            const current = rotationObj.current.val;
-            const targetRotation = Math.round(current / ITEM_ANGLE) * ITEM_ANGLE;
+            const targetRotation = Math.round(rotation.current / ITEM_ANGLE) * ITEM_ANGLE;
 
-            gsap.to(rotationObj.current, {
-                val: targetRotation,
-                duration: 1.0, // Reduced duration for snappier feel
-                ease: "power3.out", // High initial velocity for responsiveness
-                onUpdate: () => {
-                    setRotation(rotationObj.current.val);
-                }
+            gsap.to(rotation, {
+                current: targetRotation,
+                duration: 1.5,
+                ease: "expo.out",
+                onUpdate: updateVisuals
             });
-        }, 50); // Small delay to check if interaction continues
-    }, [ITEM_ANGLE]);
+        }, 50);
+    }, [ITEM_ANGLE, updateVisuals]);
 
-    // --- GLOBAL SCROLL / WHEEL HANDLER (ZERO FRICTION) ---
-    const handleWheel = useCallback((e: WheelEvent) => {
-        // Kill existing animations on new wheel input
-        gsap.killTweensOf(rotationObj.current);
-        if (snapTimeout.current) clearTimeout(snapTimeout.current);
-
-        const delta = (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 0.25;
-
-        rotationObj.current.val += delta;
-        setRotation(rotationObj.current.val);
-
-        scheduleSnap();
-    }, [scheduleSnap]);
-
-    // --- KEYBOARD HANDLER ---
     const navigate = useCallback((dir: number) => {
-        gsap.killTweensOf(rotationObj.current);
+        gsap.killTweensOf(rotation);
         if (snapTimeout.current) clearTimeout(snapTimeout.current);
 
-        const targetRotation = Math.round(rotationObj.current.val / ITEM_ANGLE) * ITEM_ANGLE + (dir * ITEM_ANGLE);
+        const targetRotation = Math.round(rotation.current / ITEM_ANGLE) * ITEM_ANGLE + (dir * ITEM_ANGLE);
 
-        gsap.to(rotationObj.current, {
-            val: targetRotation,
-            duration: 1.2,
-            ease: "power3.inOut",
-            onUpdate: () => {
-                setRotation(rotationObj.current.val);
-            }
+        gsap.to(rotation, {
+            current: targetRotation,
+            duration: 1.5,
+            ease: "expo.inOut",
+            onUpdate: updateVisuals
         });
-    }, [ITEM_ANGLE]);
+    }, [ITEM_ANGLE, updateVisuals]);
 
+
+    // --- EVENTS ---
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'ArrowLeft') navigate(-1);
@@ -137,44 +171,39 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     }, [navigate]);
 
     useEffect(() => {
-        const container = containerRef.current;
-        if (container) {
-            container.addEventListener('wheel', handleWheel, { passive: true });
-        }
-        return () => {
-            if (container) container.removeEventListener('wheel', handleWheel);
-        };
-    }, [handleWheel]);
+        // No wheel listener, let the page scroll naturally
+    }, []);
 
-    // --- GLOBAL MOUSE MOVE FOR DRAG ---
     useEffect(() => {
         const moveHandler = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
         const upHandler = () => handleEnd();
 
-        if (isInteracting) {
-            window.addEventListener('mousemove', moveHandler);
-            window.addEventListener('mouseup', upHandler);
-        }
+        window.addEventListener('mousemove', moveHandler);
+        window.addEventListener('mouseup', upHandler);
 
         return () => {
             window.removeEventListener('mousemove', moveHandler);
             window.removeEventListener('mouseup', upHandler);
         };
-    }, [isInteracting]);
+    }, []);
 
-    // --- UPDATE ACTIVE INDEX ---
+    // Initial Visual Set
     useEffect(() => {
-        const normalizedRotation = ((rotation % 360) + 360) % 360;
-        const newIndex = Math.round(normalizedRotation / ITEM_ANGLE) % works.length;
-        if (newIndex !== activeIndex) {
-            setActiveIndex(newIndex);
-        }
-    }, [rotation, works.length, activeIndex, ITEM_ANGLE]);
+        updateVisuals();
+    }, [updateVisuals]);
+
+    // Static Ticks Memo
+    const ticks = useMemo(() => [...Array(36)].map((_, i) => (
+        <div key={i} className="absolute h-full w-[1px] left-1/2 -translate-x-1/2 flex flex-col justify-between py-2 opacity-20" style={{ transform: `rotate(${i * 10}deg)` }}>
+            <div className="w-[1px] h-4 bg-black" />
+            <div className="w-[1px] h-4 bg-black" />
+        </div>
+    )), []);
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[180vh] lg:h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-start overflow-hidden bg-transparent select-none pt-0 lg:pt-0"
+            className="relative w-full h-[130vh] lg:h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-start overflow-hidden bg-transparent select-none touch-none pb-8 lg:pb-0"
             onTouchStart={(e) => {
                 handleStart(e.touches[0].clientX, e.touches[0].clientY);
             }}
@@ -183,36 +212,32 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
             }}
             onTouchEnd={handleEnd}
         >
-            {/* 1. GRAIN DIAL (COMPACT ON MOBILE, SCALED ON DESKTOP) */}
-            <div className="relative w-full h-[40vh] lg:h-full lg:w-[45%] flex items-center justify-center z-50 p-4 lg:p-20 order-first lg:order-none">
+            <style jsx global>{`
+                .text-overlay {
+                    opacity: 0;
+                    transform: translateY(3rem);
+                    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .text-overlay.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            `}</style>
+
+            {/* 1. GRAIN DIAL */}
+            <div className="relative w-full h-[40vh] lg:h-full lg:w-[45%] flex items-center justify-center z-50 p-4 lg:p-20 order-first lg:order-none pointer-events-none lg:pointer-events-auto">
                 <div
                     ref={dialRef}
-                    onMouseDown={(e) => {
-                        e.stopPropagation();
-                        handleStart(e.clientX, e.clientY);
-                    }}
-                    className="relative w-[30vh] h-[30vh] lg:w-[65vh] lg:h-[65vh] rounded-full cursor-grab active:cursor-grabbing group touch-none"
-                    style={{ transform: `rotate(${rotation}deg)` }}
+                    onMouseDown={(e) => { e.stopPropagation(); handleStart(e.clientX, e.clientY); }}
+                    className="relative w-[30vh] h-[30vh] lg:w-[65vh] lg:h-[65vh] rounded-full cursor-grab active:cursor-grabbing group touch-none pointer-events-auto"
                 >
-                    {/* Visual Rings */}
                     <div className="absolute inset-0 rounded-full border border-black/[0.08] shadow-[0_0_150px_rgba(0,0,0,0.01)]" />
                     <div className="absolute inset-[15%] rounded-full border border-black/[0.04]" />
-                    <div className="absolute inset-0 rounded-full border-t border-black/15 animate-[spin_20s_linear_infinite] opacity-10" />
-
-                    {/* Ticks */}
-                    {[...Array(36)].map((_, i) => (
-                        <div key={i} className="absolute h-full w-[1px] left-1/2 -translate-x-1/2 flex flex-col justify-between py-2 opacity-20" style={{ transform: `rotate(${i * 10}deg)` }}>
-                            <div className="w-[1px] h-4 bg-black" />
-                            <div className="w-[1px] h-4 bg-black" />
-                        </div>
-                    ))}
+                    {ticks}
 
                     {/* Core */}
-                    <div className="absolute inset-0 flex items-center justify-center p-12 lg:p-24">
-                        <div
-                            className="w-full h-full rounded-full bg-white/40 backdrop-blur-3xl border border-white/50 flex flex-col items-center justify-center gap-2 lg:gap-4 shadow-[inset_0_0_50px_rgba(255,255,255,0.3)]"
-                            style={{ transform: `rotate(${-rotation}deg)` }}
-                        >
+                    <div className="absolute inset-0 flex items-center justify-center p-12 lg:p-24 pointer-events-none">
+                        <div className="inner-core w-full h-full rounded-full bg-white/40 backdrop-blur-3xl border border-white/50 flex flex-col items-center justify-center gap-2 lg:gap-4 shadow-[inset_0_0_50px_rgba(255,255,255,0.3)]">
                             <span className="font-system text-[7px] lg:text-[10px] tracking-[0.5em] font-bold uppercase opacity-60">Neural_Reader_V4</span>
                             <div className="w-8 lg:w-16 h-[1px] bg-black/10" />
                             <div className="flex flex-col items-center gap-1">
@@ -223,14 +248,14 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                     </div>
 
                     {/* Selection Pointer */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 lg:-translate-y-12 flex flex-col items-center gap-3" style={{ transform: `rotate(${-rotation}deg)` }}>
+                    <div className="selection-pointer absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 lg:-translate-y-12 flex flex-col items-center gap-3">
                         <div className="w-3 lg:w-4 h-3 lg:h-4 bg-black rotate-45 shadow-sm" />
                         <div className="w-[1px] h-6 lg:h-12 bg-black/30" />
                     </div>
                 </div>
 
-                {/* Navigation Fallback (Refined Buttons) */}
-                <div className="absolute bottom-[2%] lg:bottom-16 flex gap-16 z-[60]">
+                {/* Navigation Controls */}
+                <div className="absolute bottom-[2%] lg:bottom-16 flex gap-16 z-[60] pointer-events-auto">
                     <button onClick={(e) => { e.stopPropagation(); navigate(-1); }} className="group flex items-center gap-4 opacity-50 hover:opacity-100 transition-all">
                         <div className="w-8 h-[1px] bg-black group-hover:w-14 transition-all" />
                         <span className="font-system text-[8px] lg:text-[10px] tracking-[0.5em] uppercase font-bold">Prev</span>
@@ -242,78 +267,42 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                 </div>
             </div>
 
-            {/* 2. MEMORY TRAIL (STRICTLY HORIZONTAL) */}
-            <div className="relative w-full h-[80vh] lg:h-full lg:w-[55%] flex items-center justify-center lg:justify-start overflow-visible mt-0 lg:mt-0">
-                <div className="relative w-full h-full flex items-center justify-center lg:justify-start">
-                    {works.map((work, idx) => {
-                        const diff = (idx - activeIndex + works.length) % works.length;
-                        const isPast = diff > works.length / 2;
-                        const offset = isPast ? diff - works.length : diff;
+            {/* 2. MEMORY TRAIL */}
+            <div ref={trailRef} className="relative w-full h-[80vh] lg:h-full lg:w-[55%] flex items-center justify-center lg:justify-start overflow-visible pointer-events-none">
+                {works.map((work, idx) => (
+                    <div
+                        key={idx}
+                        data-index={idx}
+                        className="absolute will-change-transform"
+                    >
+                        <div
+                            className="relative w-[35vh] lg:w-[75vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer pointer-events-auto"
+                            onClick={() => onWorkClick(work)}
+                        >
+                            <img src={work.image} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-[2s]" alt={work.title} />
 
-                        const isActive = idx === activeIndex;
-                        const isVisible = Math.abs(offset) <= 3;
-
-                        return (
-                            <div
-                                key={idx}
-                                className="absolute transition-all duration-[1500ms] ease-[cubic-bezier(0.16, 1, 0.3, 1)]"
-                                style={{
-                                    transform: `
-                                        translateX(${offset * 115}%) 
-                                        translateZ(${-Math.abs(offset) * 150}px)
-                                        scale(${isActive ? 1.05 : 0.75})
-                                        rotateY(${offset * -12}deg)
-                                    `,
-                                    opacity: isVisible ? (isActive ? 1 : 0.4 / (Math.abs(offset) + 0.5)) : 0,
-                                    zIndex: 10 - Math.abs(offset),
-                                    filter: isActive ? 'blur(0px)' : `blur(${Math.min(Math.abs(offset) * 8, 25)}px)`,
-                                    pointerEvents: isActive ? 'auto' : 'none'
-                                }}
-                            >
-                                <div
-                                    className="relative w-[35vh] lg:w-[75vh] aspect-[3/4.2] bg-white border border-black/10 overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.15)] group cursor-pointer"
-                                    onClick={() => onWorkClick(work)}
-                                >
-                                    <img
-                                        src={work.image}
-                                        className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-[2s]"
-                                        alt={work.title}
-                                    />
-
-                                    {/* COMPACT TEXT OVERLAY (IMAGE FOCUSED) */}
-                                    <div className={`absolute bottom-0 left-0 w-full p-4 lg:p-12 transition-all duration-1200 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-                                        <div className="bg-white/60 backdrop-blur-xl p-4 lg:p-8 border-l-[4px] border-black flex flex-col gap-2 lg:gap-4 shadow-2xl max-w-[95%] lg:max-w-[85%]">
-                                            <div className="flex justify-between items-center opacity-50">
-                                                <span className="font-system text-[7px] lg:text-[9px] tracking-[0.4em] uppercase font-bold">{work.year} // Fragment</span>
-                                                <span className="font-system-mono text-[7px] lg:text-[9px]">ID_{idx.toString().padStart(3, '0')}</span>
-                                            </div>
-                                            <h3 className="font-system text-lg lg:text-3xl tracking-tighter-massive leading-none text-black uppercase font-bold">
-                                                {work.title}
-                                            </h3>
-                                            <p className="font-system text-[9px] lg:text-[11px] tracking-widest leading-relaxed text-black/70 uppercase line-clamp-2 max-w-[90%]">
-                                                {work.desc}
-                                            </p>
-                                        </div>
+                            <div className="text-overlay absolute bottom-0 left-0 w-full p-4 lg:p-12">
+                                <div className="bg-white/60 backdrop-blur-xl p-4 lg:p-8 border-l-[4px] border-black flex flex-col gap-2 lg:gap-4 shadow-2xl max-w-[95%] lg:max-w-[85%]">
+                                    <div className="flex justify-between items-center opacity-50">
+                                        <span className="font-system text-[7px] lg:text-[9px] tracking-[0.4em] uppercase font-bold">{work.year} // Fragment</span>
+                                        <span className="font-system-mono text-[7px] lg:text-[9px]">ID_{idx.toString().padStart(3, '0')}</span>
                                     </div>
+                                    <h3 className="font-system text-lg lg:text-3xl tracking-tighter-massive leading-none text-black uppercase font-bold">{work.title}</h3>
+                                    <p className="font-system text-[9px] lg:text-[11px] tracking-widest leading-relaxed text-black/70 uppercase line-clamp-2 max-w-[90%]">{work.desc}</p>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            {/* DECORATIVE HUD LAYER */}
+            {/* HUD */}
             <div className="fixed inset-0 pointer-events-none z-[70]">
-                {/* Meta Markers */}
                 <div className="absolute top-12 left-12 lg:top-24 lg:left-24 flex flex-col gap-3 opacity-30">
                     <div className="flex items-center gap-4">
                         <div className="w-1.5 h-1.5 bg-black rotate-45" />
                         <span className="font-system text-[8px] lg:text-[10px] tracking-[0.8em] uppercase font-bold">Temporal_Eixo_X</span>
                     </div>
-                </div>
-
-                <div className="absolute bottom-12 left-12 lg:bottom-24 lg:left-24 flex items-center gap-8 opacity-20">
-                    <span className="font-system text-[7px] lg:text-[9px] tracking-[1.2em] uppercase font-system-mono tracking-[1.5em]">DECRYPTING_NEURAL_SEQUENCE...</span>
                 </div>
             </div>
         </div>
