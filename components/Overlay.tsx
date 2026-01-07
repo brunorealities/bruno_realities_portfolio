@@ -215,7 +215,7 @@ const Overlay: React.FC<OverlayProps> = ({ onProjectClick, scrollProgress, disto
       <div className="divider-dark" />
 
       {/* WORKS SECTION */}
-      <section id="works" className="min-h-[95vh] border-t border-black/5 pb-4 md:pb-10">
+      <section id="works" className="min-h-[130vh] lg:min-h-[95vh] border-t border-black/5 pb-4 md:pb-10">
         <div className="relative z-10">
           <OrbitalInterface
             works={works}

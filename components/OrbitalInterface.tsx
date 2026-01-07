@@ -249,14 +249,7 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[130vh] lg:h-[95vh] flex flex-col lg:flex-row items-center justify-center lg:justify-center overflow-hidden bg-transparent select-none touch-pan-y pb-4 lg:pb-0"
-            onTouchStart={(e) => {
-                handleStart(e.touches[0].clientX, e.touches[0].clientY);
-            }}
-            onTouchMove={(e) => {
-                handleMove(e.touches[0].clientX, e.touches[0].clientY, true);
-            }}
-            onTouchEnd={handleEnd}
+            className="relative w-full h-[145vh] lg:h-[95vh] flex flex-col lg:flex-row items-center justify-center lg:justify-center overflow-hidden bg-transparent select-none touch-pan-y pb-4 lg:pb-0"
         >
             <style jsx global>{`
                 .text-overlay {
@@ -270,8 +263,8 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                 }
             `}</style>
 
-            {/* 1. GRAIN DIAL */}
-            <div className="relative w-full h-[40vh] lg:h-full lg:w-[35%] flex items-center justify-center z-50 p-4 lg:p-0 order-first lg:order-none pointer-events-none lg:pointer-events-auto">
+            {/* 1. GRAIN DIAL - Balanced margin on mobile */}
+            <div className="relative w-full h-[45vh] lg:h-full lg:w-[35%] flex items-center justify-center z-50 p-4 lg:p-0 order-first lg:order-none pointer-events-none lg:pointer-events-auto mb-30 lg:mb-0">
                 {/* FILM STRIP (VERTICAL REEL) */}
                 <div className="absolute right-[-10%] lg:right-[-5%] h-[350px] w-[100px] overflow-hidden pointer-events-none z-0 hidden lg:flex items-center">
                     {/* Connector Line to Dial */}
@@ -308,6 +301,18 @@ const OrbitalInterface: React.FC<OrbitalInterfaceProps> = ({ works, onWorkClick 
                 <div
                     ref={dialRef}
                     onMouseDown={(e) => { e.stopPropagation(); handleStart(e.clientX, e.clientY); }}
+                    onTouchStart={(e) => {
+                        e.stopPropagation();
+                        handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                    }}
+                    onTouchMove={(e) => {
+                        e.stopPropagation();
+                        handleMove(e.touches[0].clientX, e.touches[0].clientY, true);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        handleEnd();
+                    }}
                     className="relative w-[30vh] h-[30vh] lg:w-[55vh] lg:h-[55vh] rounded-full cursor-grab active:cursor-grabbing group touch-pan-y pointer-events-auto"
                 >
                     <div className="absolute inset-0 rounded-full border border-black/[0.08] shadow-[0_0_150px_rgba(0,0,0,0.01)]" />
